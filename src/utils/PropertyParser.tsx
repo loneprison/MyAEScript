@@ -1,5 +1,6 @@
 import * as _ from 'soil-ts';
-import { getTextDocumentValue, sortObjectKeysByData } from './Library';
+import getTextDocumentValue from './getTextDocumentValue';
+import sortObjectKeysByData from './sortObjectKeysByData';
 
 
 const selfKey = "S0000 selfProperty"
@@ -20,7 +21,7 @@ const selfKey = "S0000 selfProperty"
  *     $.writeln("请选择图层")
  * }
  */
-export function getRootPropertyData(rootProperty: _PropertyClasses): PropertyDataStructure {
+function getRootPropertyData(rootProperty: _PropertyClasses): PropertyDataStructure {
     let data: PropertyDataStructure = {};
     if (_.isProperty(rootProperty) || _.isPropertyGroup(rootProperty)) {
         data = processProperty(rootProperty);
@@ -48,7 +49,7 @@ function processProperty(property: _PropertyClasses | PropertyGroup, index?: num
 }
 
 
-export function getLayerDataOld(layer: Layer): PropertyDataStructure {
+function getLayerDataOld(layer: Layer): PropertyDataStructure {
     let data: PropertyDataStructure = {};
 
     for (let i = 1; i <= layer.numProperties; i++) {
@@ -171,7 +172,7 @@ function getLayerData(layer: Layer): PropertyDataStructure {
             if (textDocument.value) {
                 textDocument.value = getTextDocumentValue(textDocument.value)
             } else if (textDocument.Keyframe) {
-                textDocument.Keyframe = _.forEach(textDocument.Keyframe,(Keyframe)=>{
+                textDocument.Keyframe = _.forEach(textDocument.Keyframe, (Keyframe) => {
                     Keyframe.keyValue = getTextDocumentValue(Keyframe.keyValue)
                 })
             }
@@ -258,12 +259,12 @@ function getPropertyGroupData(propertyGroup: PropertyGroup): PropertyDataStructu
     return data;
 }
 
-function getSelfMetadata(propertyGroup: PropertyGroup,readName:boolean = false): PropertyMetadata {
+function getSelfMetadata(propertyGroup: PropertyGroup, readName: boolean = false): PropertyMetadata {
     let data: PropertyMetadata = {};
     if (propertyGroup.canSetEnabled) data.enabled = propertyGroup.enabled;
-    if(readName){
-         data.name = propertyGroup.name;
-    }else if (_.isNamedGroupType(propertyGroup) && _.isIndexedGroupType(propertyGroup.propertyGroup(1))){
+    if (readName) {
+        data.name = propertyGroup.name;
+    } else if (_.isNamedGroupType(propertyGroup) && _.isIndexedGroupType(propertyGroup.propertyGroup(1))) {
         data.name = propertyGroup.name;
     }
 
@@ -271,7 +272,7 @@ function getSelfMetadata(propertyGroup: PropertyGroup,readName:boolean = false):
 }
 
 function getSelfMetadataByBaseLayer(layer: Layer): BaseLayerMetadata {
-    let data: BaseLayerMetadata = getSelfMetadata(layer,true);
+    let data: BaseLayerMetadata = getSelfMetadata(layer, true);
 
     return {
         ...data,
@@ -318,3 +319,6 @@ function getSelfMetadataByRasterLayer(layer: RasterLayer): RasterLayerMetadata {
     };
 }
 
+
+
+export default { getRootPropertyData, getLayerDataOld }

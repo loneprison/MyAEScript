@@ -6,7 +6,7 @@ const srcDir = path.resolve(__dirname, "../src");
 
 // 创建监视器
 const watcher = chokidar.watch(srcDir, {
-    ignored: [/node_modules/, /@types/, /\/\..*/], // 匹配所有以 . 开头的文件夹和文件
+    ignored: [/node_modules/, /@types/, /utils/], // 匹配所有以 . 开头的文件夹和文件
     persistent: true,
     ignoreInitial: true,
 });

@@ -1,5 +1,10 @@
 import * as _ from 'soil-ts';
-import { sortLayersByIndex, sortLayersByName } from '../.Library/Library';
+// import sortLayersByIndex from '../utils/sortLayersByIndex';
+// import sortLayersByName from '../utils/sortLayersByName';
+import {sortLayersByIndex,sortLayersByName} from '../utils/index';
+
+
+// 一次性脚本，即为了某个工作流程开发的【临时的一次性的脚本】，因此不具备通用性和严谨性
 
 // 防止自动清理清理【它所认为的无关代码】而做的特殊处理
 const getStr = (str: string): string => str;
