@@ -1,5 +1,5 @@
 import * as _ from 'soil-ts';
-import { setPropertyByData } from '../utils';
+import { setPropertyByData } from '../../utils';
 
 function showError(message: string): void {
     alert(message);

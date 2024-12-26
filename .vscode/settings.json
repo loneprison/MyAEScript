@@ -9,5 +9,8 @@
     "Bezier",
     "outro",
     "PSOFT"
-  ]
+  ],
+  "files.associations": {
+        "*.json": "jsonc"
+    }
 }

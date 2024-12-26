@@ -2,24 +2,34 @@ const fs = require('fs');
 const path = require('path');
 
 // 文件夹路径
-const folderPath = './src/utils'; // 请根据实际情况修改路径
+const folderPath = 'src/utils'; // 请根据实际情况修改路径
 const outputFileName = 'index.ts'; // 输出文件名
 
-// 读取文件内容并判断默认导出形式
-function analyzeExportDefault(filePath) {
+// 分析文件内容中的导出信息
+function analyzeExports(filePath) {
   const fileContent = fs.readFileSync(filePath, 'utf8');
-  const defaultExportRegex = /export\s+default\s+{([^}]+)}/;
 
-  const match = fileContent.match(defaultExportRegex);
-  if (match) {
-    // 提取对象中导出的键名
-    const properties = match[1]
-      .split(',')
-      .map(prop => prop.trim())
-      .filter(Boolean);
-    return properties;
+  // 匹配 export { ... } 格式的命名导出
+  const namedExportGroupRegex = /export\s+\{\s*([\w,\s]+)\s*\}/;
+  // 匹配独立命名导出
+  const namedExportRegex = /export\s+(?:const|function|let|var)\s+(\w+)/g;
+  // 匹配默认导出
+  const defaultExportRegex = /export\s+default\s+(\w+)/;
+
+  const namedExports = [];
+  const namedGroupMatch = fileContent.match(namedExportGroupRegex);
+  if (namedGroupMatch) {
+    namedExports.push(...namedGroupMatch[1].split(',').map(e => e.trim()));
   }
-  return null; // 没有导出对象
+
+  let match;
+  while ((match = namedExportRegex.exec(fileContent)) !== null) {
+    namedExports.push(match[1]);
+  }
+
+  const defaultExport = fileContent.match(defaultExportRegex)?.[1] || null;
+
+  return { namedExports, defaultExport };
 }
 
 // 获取所有 .tsx 文件
@@ -36,20 +46,20 @@ function getTSXFiles(dir) {
 function generateExports(files) {
   return files
     .map(({ name, path }) => {
-      const properties = analyzeExportDefault(path);
+      const { namedExports, defaultExport } = analyzeExports(path);
 
-      if (properties) {
-        // 如果是对象导出，解构对象并单独导出每个属性
-        return `import ${name}Default from './${name}';\n` +
-               `export const { ${properties.join(', ')} } = ${name}Default;`;
-      } else {
-        // 简单的默认导出
+      if (namedExports.length > 0) {
+        // 如果存在命名导出，直接生成对应的导出语句
+        return `export { ${namedExports.join(', ')} } from './${name}';`;
+      } else if (defaultExport) {
+        // 如果只有一个默认导出
         return `export { default as ${name} } from './${name}';`;
       }
+      return ''; // 没有任何导出时返回空字符串
     })
+    .filter(Boolean) // 去掉空字符串
     .join('\n\n');
 }
-
 
 // 写入 index.ts 文件
 function createIndexFile(dir, fileName) {

@@ -1,7 +1,7 @@
 import * as _ from 'soil-ts';
 // import sortLayersByIndex from '../utils/sortLayersByIndex';
 // import sortLayersByName from '../utils/sortLayersByName';
-import {sortLayersByIndex,sortLayersByName} from '../utils/index';
+import {sortLayersByIndex,sortLayersByName} from '../../utils/index';
 
 
 // 一次性脚本，即为了某个工作流程开发的【临时的一次性的脚本】，因此不具备通用性和严谨性

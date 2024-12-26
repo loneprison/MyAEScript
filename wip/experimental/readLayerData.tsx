@@ -1,5 +1,5 @@
 import * as _ from 'soil-ts';
-import { getRootPropertyData } from '../utils';
+import { getRootPropertyData } from '../../utils';
 
 const firstLayer = _.getFirstSelectedLayer();
 

@@ -1,5 +1,5 @@
 import * as _ from 'soil-ts';
-import { setPropertyByData } from '../utils';
+import { setPropertyByData } from '../../utils';
 
 const firstLayer = _.getFirstSelectedLayer();
 if (_.isRasterLayer(firstLayer)) {

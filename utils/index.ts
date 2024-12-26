@@ -10,8 +10,7 @@ export { default as getTextDocumentValue } from './getTextDocumentValue';
 
 export { default as getTrackMatteTypeByName } from './getTrackMatteTypeByName';
 
-import PropertyParserDefault from './PropertyParser';
-export const { getRootPropertyData, getLayerDataOld } = PropertyParserDefault;
+export { getRootPropertyData, getLayerDataOld } from './PropertyParser';
 
 export { default as setPropertyByData } from './setPropertyByData';
 

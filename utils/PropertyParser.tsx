@@ -321,4 +321,4 @@ function getSelfMetadataByRasterLayer(layer: RasterLayer): RasterLayerMetadata {
 
 
 
-export default { getRootPropertyData, getLayerDataOld }
+export { getRootPropertyData, getLayerDataOld }

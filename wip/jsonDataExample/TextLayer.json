@@ -1,0 +1,907 @@
+{
+    "S0000 selfProperty": {
+        "enabled": true,
+        "name": "123",
+        "autoOrient": 4212,
+        "inPoint": 0,
+        "outPoint": 20,
+        "startTime": 0,
+        "stretch": 100,
+        "time": 0,
+        "label": 1,
+        "locked": false,
+        "shy": false,
+        "solo": false,
+        "adjustmentLayer": false,
+        "audioEnabled": true,
+        "blendingMode": 5212,
+        "effectsActive": true,
+        "environmentLayer": false,
+        "frameBlendingType": 4012,
+        "timeRemapEnabled": false,
+        "guideLayer": false,
+        "motionBlur": false,
+        "preserveTransparency": false,
+        "quality": 4614,
+        "samplingQuality": 4812,
+        "trackMatteType": 5012,
+        "height": 1326,
+        "width": 2357
+    },
+    "P0001 ADBE Marker": {
+        "name": "标记",
+        "value": {
+            "chapter": "",
+            "comment": "",
+            "cuePointName": "",
+            "duration": 0,
+            "eventCuePoint": true,
+            "frameTarget": "",
+            "getParameters": "\nfunction getParameters() {\n    [native code]\n}\n",
+            "label": 0,
+            "protectedRegion": false,
+            "setParameters": "\nfunction setParameters() {\n    [native code]\n}\n",
+            "url": ""
+        }
+    },
+    "G0002 ADBE Text Properties": {
+        "S0000 selfProperty": {
+            "name": "文本"
+        },
+        "P0001 ADBE Text Document": {
+            "textValue": {
+                "allCaps": false,
+                "applyFill": true,
+                "applyStroke": false,
+                "autoHyphenate": true,
+                "autoKernType": "11413 | AutoKernType.METRIC_KERN",
+                "autoLeading": true,
+                "baselineDirection": "11613 | BaselineDirection.BASELINE_VERTICAL_ROTATED",
+                "baselineLocs": [
+                    0,
+                    0,
+                    153.900009155273,
+                    0
+                ],
+                "baselineShift": 0,
+                "boxText": false,
+                "characterRange": "[native code]",
+                "composedLineCharacterIndexesAt": "[native code]",
+                "composedLineCount": 1,
+                "composedLineRange": "[native code]",
+                "composerEngine": "10413 | ComposerEngine.UNIVERSAL_TYPE_ENGINE",
+                "digitSet": "12012 | DigitSet.DEFAULT_DIGITS",
+                "direction": "10212 | ParagraphDirection.DIRECTION_LEFT_TO_RIGHT",
+                "endIndent": 0,
+                "everyLineComposer": false,
+                "fauxBold": false,
+                "fauxItalic": false,
+                "firstLineIndent": 0,
+                "font": "SourceHanSansCN-Medium",
+                "fontBaselineOption": "11212 | FontBaselineOption.FONT_NORMAL_BASELINE",
+                "fontCapsOption": "11012 | FontCapsOption.FONT_NORMAL_CAPS",
+                "fontFamily": "Source Han Sans CN",
+                "fontLocation": "",
+                "fontObject": {
+                    "designAxesData": null,
+                    "designVector": null,
+                    "designVectorIsDefault": null,
+                    "familyName": "Source Han Sans CN",
+                    "familyPrefix": "",
+                    "fontID": 65,
+                    "fullName": "Source Han Sans CN Medium",
+                    "hasDesignAxes": false,
+                    "hasSameDict": "[native code]",
+                    "isFromAdobeFonts": false,
+                    "isSubstitute": false,
+                    "location": "",
+                    "nativeFamilyName": "思源黑体 CN",
+                    "nativeFullName": "思源黑体 CN Medium",
+                    "nativeStyleName": "Medium",
+                    "postScriptName": "SourceHanSansCN-Medium",
+                    "postScriptNameForDesignVector": "[native code]",
+                    "styleName": "Medium",
+                    "technology": "12414 | CTFontTechnology.CT_CID_FONT",
+                    "type": "12618 | CTFontType.CT_OPENTYPE_CID_FONTTYPE",
+                    "version": "1.000",
+                    "writingScripts": [
+                        "12237 | CTScript.CT_SIMPLIFIEDCHINESE_SCRIPT",
+                        "12213 | CTScript.CT_JAPANESE_SCRIPT",
+                        "12241 | CTScript.CT_EASTEUROPEANROMAN_SCRIPT",
+                        "12219 | CTScript.CT_CYRILLIC_SCRIPT",
+                        "12212 | CTScript.CT_ROMAN_SCRIPT",
+                        "12242 | CTScript.CT_VIETNAMESE_SCRIPT"
+                    ]
+                },
+                "fontSize": 90,
+                "fontStyle": "Medium",
+                "hangingRoman": false,
+                "horizontalScale": 1,
+                "justification": "7413 | ParagraphJustification.LEFT_JUSTIFY",
+                "kerning": 0,
+                "leading": 108.000007629395,
+                "leadingType": "10812 | LeadingType.ROMAN_LEADING_TYPE",
+                "ligature": false,
+                "lineJoinType": "11812 | LineJoinType.LINE_JOIN_MITER",
+                "lineOrientation": 13212,
+                "noBreak": false,
+                "paragraphCharacterIndexesAt": "[native code]",
+                "paragraphCount": 1,
+                "paragraphRange": "[native code]",
+                "pointText": true,
+                "resetCharStyle": "[native code]",
+                "resetParagraphStyle": "[native code]",
+                "smallCaps": false,
+                "spaceAfter": 0,
+                "spaceBefore": 0,
+                "startIndent": 0,
+                "strokeOverFill": false,
+                "strokeWidth": 10,
+                "subscript": false,
+                "superscript": false,
+                "text": "123",
+                "tracking": 0,
+                "tsume": 0,
+                "verticalScale": 1,
+                "boxTextPos": null,
+                "boxTextSize": null,
+                "fillColor": [
+                    1,
+                    1,
+                    1
+                ],
+                "strokeColor": null
+            }
+        },
+        "G0002 ADBE Text Path Options": {
+            "S0000 selfProperty": {
+                "enabled": true,
+                "name": "路径选项"
+            },
+            "P0001 ADBE Text Path": {
+                "name": "路径",
+                "value": 0
+            },
+            "P0002 ADBE Text Reverse Path": {
+                "name": "反转路径",
+                "value": 0
+            },
+            "P0003 ADBE Text Perpendicular To Path": {
+                "name": "垂直于路径",
+                "value": 1
+            },
+            "P0004 ADBE Text Force Align Path": {
+                "name": "强制对齐",
+                "value": 0
+            },
+            "P0005 ADBE Text First Margin": {
+                "name": "首字边距",
+                "value": 0
+            },
+            "P0006 ADBE Text Last Margin": {
+                "name": "末字边距",
+                "value": 0
+            }
+        },
+        "G0003 ADBE Text More Options": {
+            "S0000 selfProperty": {
+                "name": "更多选项"
+            },
+            "P0001 ADBE Text Anchor Point Option": {
+                "name": "锚点分组",
+                "value": 1
+            },
+            "P0002 ADBE Text Anchor Point Align": {
+                "name": "分组对齐",
+                "value": [
+                    0,
+                    0
+                ]
+            },
+            "P0003 ADBE Text Render Order": {
+                "name": "填充和描边",
+                "value": 1
+            },
+            "P0004 ADBE Text Character Blend Mode": {
+                "name": "字符间混合",
+                "value": 1
+            }
+        },
+        "G0004 ADBE Text Animators": {
+            "S0000 selfProperty": {
+                "name": "动画制作工具"
+            }
+        }
+    },
+    "G0003 ADBE Mask Parade": {
+        "S0000 selfProperty": {
+            "name": "蒙版"
+        }
+    },
+    "G0004 ADBE Effect Parade": {
+        "S0000 selfProperty": {
+            "name": "效果"
+        }
+    },
+    "G0005 ADBE Transform Group": {
+        "S0000 selfProperty": {
+            "name": "变换"
+        },
+        "P0001 ADBE Anchor Point": {
+            "name": "锚点",
+            "value": [
+                0,
+                0,
+                0
+            ]
+        },
+        "P0002 ADBE Position": {
+            "name": "位置",
+            "value": [
+                1103.66353279427,
+                594.495565827078,
+                0
+            ]
+        },
+        "P0003 ADBE Position_0": {
+            "name": "X 位置",
+            "value": 0
+        },
+        "P0004 ADBE Position_1": {
+            "name": "Y 位置",
+            "value": 0
+        },
+        "P0005 ADBE Position_2": {
+            "name": "Z 位置",
+            "value": 0
+        },
+        "P0006 ADBE Scale": {
+            "name": "缩放",
+            "value": [
+                100,
+                100,
+                100
+            ]
+        },
+        "P0007 ADBE Orientation": {
+            "name": "方向",
+            "value": [
+                0,
+                0,
+                0
+            ]
+        },
+        "P0008 ADBE Rotate X": {
+            "name": "X 轴旋转",
+            "value": 0
+        },
+        "P0009 ADBE Rotate Y": {
+            "name": "Y 轴旋转",
+            "value": 0
+        },
+        "P0010 ADBE Rotate Z": {
+            "name": "旋转",
+            "value": 0
+        },
+        "P0011 ADBE Opacity": {
+            "name": "不透明度",
+            "value": 100
+        },
+        "P0012 ADBE Envir Appear in Reflect": {
+            "name": "在反射中显示",
+            "value": 1
+        }
+    },
+    "G0006 ADBE Layer Styles": {
+        "S0000 selfProperty": {
+            "name": "图层样式"
+        },
+        "G0001 ADBE Blend Options Group": {
+            "S0000 selfProperty": {
+                "name": "混合选项"
+            },
+            "P0001 ADBE Global Angle2": {
+                "name": "全局光角度",
+                "value": 120
+            },
+            "P0002 ADBE Global Altitude2": {
+                "name": "全局光高度",
+                "value": 30
+            },
+            "G0003 ADBE Adv Blend Group": {
+                "S0000 selfProperty": {
+                    "name": "高级混合"
+                },
+                "P0001 ADBE Layer Fill Opacity2": {
+                    "name": "填充不透明度",
+                    "value": 100
+                },
+                "P0002 ADBE R Channel Blend": {
+                    "name": "红色",
+                    "value": 1
+                },
+                "P0003 ADBE G Channel Blend": {
+                    "name": "绿色",
+                    "value": 1
+                },
+                "P0004 ADBE B Channel Blend": {
+                    "name": "蓝色",
+                    "value": 1
+                },
+                "P0005 ADBE Blend Interior": {
+                    "name": "混合内部样式为组",
+                    "value": 0
+                },
+                "P0006 ADBE Blend Ranges": {
+                    "name": "使用源的混合范围",
+                    "value": 1
+                }
+            }
+        },
+        "G0002 dropShadow/enabled": {
+            "S0000 selfProperty": {
+                "name": "投影"
+            },
+            "P0001 dropShadow/mode2": {
+                "name": "混合模式",
+                "value": 5
+            },
+            "P0002 dropShadow/color": {
+                "name": "颜色",
+                "value": [
+                    0,
+                    0,
+                    0,
+                    1
+                ]
+            },
+            "P0003 dropShadow/opacity": {
+                "name": "不透明度",
+                "value": 75
+            },
+            "P0004 dropShadow/useGlobalAngle": {
+                "name": "使用全局光",
+                "value": 0
+            },
+            "P0005 dropShadow/localLightingAngle": {
+                "name": "角度",
+                "value": 120
+            },
+            "P0006 dropShadow/distance": {
+                "name": "距离",
+                "value": 5
+            },
+            "P0007 dropShadow/chokeMatte": {
+                "name": "扩展",
+                "value": 0
+            },
+            "P0008 dropShadow/blur": {
+                "name": "大小",
+                "value": 5
+            },
+            "P0009 dropShadow/noise": {
+                "name": "杂色",
+                "value": 0
+            },
+            "P0010 dropShadow/layerConceals": {
+                "name": "图层镂空投影",
+                "value": 1
+            }
+        },
+        "G0003 innerShadow/enabled": {
+            "S0000 selfProperty": {
+                "name": "内阴影"
+            },
+            "P0001 innerShadow/mode2": {
+                "name": "混合模式",
+                "value": 5
+            },
+            "P0002 innerShadow/color": {
+                "name": "颜色",
+                "value": [
+                    0,
+                    0,
+                    0,
+                    1
+                ]
+            },
+            "P0003 innerShadow/opacity": {
+                "name": "不透明度",
+                "value": 75
+            },
+            "P0004 innerShadow/useGlobalAngle": {
+                "name": "使用全局光",
+                "value": 0
+            },
+            "P0005 innerShadow/localLightingAngle": {
+                "name": "角度",
+                "value": 120
+            },
+            "P0006 innerShadow/distance": {
+                "name": "距离",
+                "value": 5
+            },
+            "P0007 innerShadow/chokeMatte": {
+                "name": "阻塞",
+                "value": 0
+            },
+            "P0008 innerShadow/blur": {
+                "name": "大小",
+                "value": 5
+            },
+            "P0009 innerShadow/noise": {
+                "name": "杂色",
+                "value": 0
+            }
+        },
+        "G0004 outerGlow/enabled": {
+            "S0000 selfProperty": {
+                "name": "外发光"
+            },
+            "P0001 outerGlow/mode2": {
+                "name": "混合模式",
+                "value": 11
+            },
+            "P0002 outerGlow/opacity": {
+                "name": "不透明度",
+                "value": 75
+            },
+            "P0003 outerGlow/noise": {
+                "name": "杂色",
+                "value": 0
+            },
+            "P0004 outerGlow/AEColorChoice": {
+                "name": "颜色类型",
+                "value": 1
+            },
+            "P0005 outerGlow/color": {
+                "name": "颜色",
+                "value": [
+                    1,
+                    1,
+                    0.74509803921569,
+                    1
+                ]
+            },
+            "P0007 outerGlow/gradientSmoothness": {
+                "name": "渐变平滑度",
+                "value": 100
+            },
+            "P0008 outerGlow/glowTechnique": {
+                "name": "技术",
+                "value": 1
+            },
+            "P0009 outerGlow/chokeMatte": {
+                "name": "扩展",
+                "value": 0
+            },
+            "P0010 outerGlow/blur": {
+                "name": "大小",
+                "value": 5
+            },
+            "P0011 outerGlow/inputRange": {
+                "name": "范围",
+                "value": 50
+            },
+            "P0012 outerGlow/shadingNoise": {
+                "name": "抖动",
+                "value": 0
+            }
+        },
+        "G0005 innerGlow/enabled": {
+            "S0000 selfProperty": {
+                "name": "内发光"
+            },
+            "P0001 innerGlow/mode2": {
+                "name": "混合模式",
+                "value": 11
+            },
+            "P0002 innerGlow/opacity": {
+                "name": "不透明度",
+                "value": 75
+            },
+            "P0003 innerGlow/noise": {
+                "name": "杂色",
+                "value": 0
+            },
+            "P0004 innerGlow/AEColorChoice": {
+                "name": "颜色类型",
+                "value": 1
+            },
+            "P0005 innerGlow/color": {
+                "name": "颜色",
+                "value": [
+                    1,
+                    1,
+                    0.74509803921569,
+                    1
+                ]
+            },
+            "P0007 innerGlow/gradientSmoothness": {
+                "name": "渐变平滑度",
+                "value": 100
+            },
+            "P0008 innerGlow/glowTechnique": {
+                "name": "技术",
+                "value": 1
+            },
+            "P0009 innerGlow/innerGlowSource": {
+                "name": "源",
+                "value": 1
+            },
+            "P0010 innerGlow/chokeMatte": {
+                "name": "阻塞",
+                "value": 0
+            },
+            "P0011 innerGlow/blur": {
+                "name": "大小",
+                "value": 5
+            },
+            "P0012 innerGlow/inputRange": {
+                "name": "范围",
+                "value": 50
+            },
+            "P0013 innerGlow/shadingNoise": {
+                "name": "抖动",
+                "value": 0
+            }
+        },
+        "G0006 bevelEmboss/enabled": {
+            "S0000 selfProperty": {
+                "name": "斜面和浮雕"
+            },
+            "P0001 bevelEmboss/bevelStyle": {
+                "name": "样式",
+                "value": 2
+            },
+            "P0002 bevelEmboss/bevelTechnique": {
+                "name": "技术",
+                "value": 1
+            },
+            "P0003 bevelEmboss/strengthRatio": {
+                "name": "深度",
+                "value": 100
+            },
+            "P0004 bevelEmboss/bevelDirection": {
+                "name": "方向",
+                "value": 1
+            },
+            "P0005 bevelEmboss/blur": {
+                "name": "大小",
+                "value": 5
+            },
+            "P0006 bevelEmboss/softness": {
+                "name": "柔化",
+                "value": 0
+            },
+            "P0007 bevelEmboss/useGlobalAngle": {
+                "name": "使用全局光",
+                "value": 0
+            },
+            "P0008 bevelEmboss/localLightingAngle": {
+                "name": "角度",
+                "value": 120
+            },
+            "P0009 bevelEmboss/localLightingAltitude": {
+                "name": "高度",
+                "value": 30
+            },
+            "P0010 bevelEmboss/highlightMode": {
+                "name": "高亮模式",
+                "value": 11
+            },
+            "P0011 bevelEmboss/highlightColor": {
+                "name": "加亮颜色",
+                "value": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "P0012 bevelEmboss/highlightOpacity": {
+                "name": "高光不透明度",
+                "value": 75
+            },
+            "P0013 bevelEmboss/shadowMode": {
+                "name": "阴影模式",
+                "value": 5
+            },
+            "P0014 bevelEmboss/shadowColor": {
+                "name": "阴影颜色",
+                "value": [
+                    0,
+                    0,
+                    0,
+                    1
+                ]
+            },
+            "P0015 bevelEmboss/shadowOpacity": {
+                "name": "阴影不透明度",
+                "value": 75
+            }
+        },
+        "G0007 chromeFX/enabled": {
+            "S0000 selfProperty": {
+                "name": "光泽"
+            },
+            "P0001 chromeFX/mode2": {
+                "name": "混合模式",
+                "value": 5
+            },
+            "P0002 chromeFX/color": {
+                "name": "颜色",
+                "value": [
+                    0,
+                    0,
+                    0,
+                    1
+                ]
+            },
+            "P0003 chromeFX/opacity": {
+                "name": "不透明度",
+                "value": 50
+            },
+            "P0004 chromeFX/localLightingAngle": {
+                "name": "角度",
+                "value": 19
+            },
+            "P0005 chromeFX/distance": {
+                "name": "距离",
+                "value": 11
+            },
+            "P0006 chromeFX/blur": {
+                "name": "大小",
+                "value": 14
+            },
+            "P0007 chromeFX/invert": {
+                "name": "反转",
+                "value": 1
+            }
+        },
+        "G0008 solidFill/enabled": {
+            "S0000 selfProperty": {
+                "name": "颜色叠加"
+            },
+            "P0001 solidFill/mode2": {
+                "name": "混合模式",
+                "value": 1
+            },
+            "P0002 solidFill/color": {
+                "name": "颜色",
+                "value": [
+                    1,
+                    0,
+                    0,
+                    1
+                ]
+            },
+            "P0003 solidFill/opacity": {
+                "name": "不透明度",
+                "value": 100
+            }
+        },
+        "G0009 gradientFill/enabled": {
+            "S0000 selfProperty": {
+                "name": "渐变叠加"
+            },
+            "P0001 gradientFill/mode2": {
+                "name": "混合模式",
+                "value": 1
+            },
+            "P0002 gradientFill/opacity": {
+                "name": "不透明度",
+                "value": 100
+            },
+            "P0004 gradientFill/gradientSmoothness": {
+                "name": "渐变平滑度",
+                "value": 100
+            },
+            "P0005 gradientFill/angle": {
+                "name": "角度",
+                "value": 90
+            },
+            "P0006 gradientFill/type": {
+                "name": "样式",
+                "value": 1
+            },
+            "P0007 gradientFill/reverse": {
+                "name": "反向",
+                "value": 0
+            },
+            "P0008 gradientFill/align": {
+                "name": "与图层对齐",
+                "value": 1
+            },
+            "P0009 gradientFill/scale": {
+                "name": "缩放",
+                "value": 100
+            },
+            "P0010 gradientFill/offset": {
+                "name": "偏移",
+                "value": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "G0010 patternFill/enabled": {
+            "S0000 selfProperty": {
+                "name": "图案叠加"
+            },
+            "P0001 patternFill/mode2": {
+                "name": "混合模式",
+                "value": 1
+            },
+            "P0002 patternFill/opacity": {
+                "name": "不透明度",
+                "value": 100
+            },
+            "P0003 patternFill/align": {
+                "name": "与图层链接",
+                "value": 1
+            },
+            "P0004 patternFill/scale": {
+                "name": "缩放",
+                "value": 100
+            },
+            "P0005 patternFill/phase": {
+                "name": "偏移",
+                "value": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "G0011 frameFX/enabled": {
+            "S0000 selfProperty": {
+                "name": "描边"
+            },
+            "P0001 frameFX/mode2": {
+                "name": "混合模式",
+                "value": 1
+            },
+            "P0002 frameFX/color": {
+                "name": "颜色",
+                "value": [
+                    1,
+                    0,
+                    0,
+                    1
+                ]
+            },
+            "P0003 frameFX/size": {
+                "name": "大小",
+                "value": 3
+            },
+            "P0004 frameFX/opacity": {
+                "name": "不透明度",
+                "value": 100
+            },
+            "P0005 frameFX/style": {
+                "name": "位置",
+                "value": 1
+            }
+        }
+    },
+    "G0007 ADBE Extrsn Options Group": {
+        "S0000 selfProperty": {
+            "name": "几何选项"
+        },
+        "P0001 ADBE Bevel Styles": {
+            "name": "斜面样式",
+            "value": 1
+        },
+        "P0002 ADBE Bevel Direction": {
+            "name": "斜面方向",
+            "value": 1
+        },
+        "P0003 ADBE Bevel Depth": {
+            "name": "斜面深度",
+            "value": 2
+        },
+        "P0004 ADBE Hole Bevel Depth": {
+            "name": "洞斜面深度",
+            "value": 100
+        },
+        "P0005 ADBE Extrsn Depth": {
+            "name": "凸出深度",
+            "value": 0
+        }
+    },
+    "G0008 ADBE Material Options Group": {
+        "S0000 selfProperty": {
+            "name": "材质选项"
+        },
+        "P0001 ADBE Casts Shadows": {
+            "name": "投影",
+            "value": 0
+        },
+        "P0002 ADBE Light Transmission": {
+            "name": "透光率",
+            "value": 0
+        },
+        "P0003 ADBE Accepts Shadows": {
+            "name": "接受阴影",
+            "value": 1
+        },
+        "P0004 ADBE Accepts Lights": {
+            "name": "接受灯光",
+            "value": 1
+        },
+        "P0005 ADBE Shadow Color": {
+            "name": "阴影颜色",
+            "value": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "P0006 ADBE Appears in Reflections": {
+            "name": "在反射中显示",
+            "value": 1
+        },
+        "P0007 ADBE Ambient Coefficient": {
+            "name": "周围",
+            "value": 100
+        },
+        "P0008 ADBE Diffuse Coefficient": {
+            "name": "漫射",
+            "value": 50
+        },
+        "P0009 ADBE Specular Coefficient": {
+            "name": "镜面强度",
+            "value": 50
+        },
+        "P0010 ADBE Shininess Coefficient": {
+            "name": "镜面反光度",
+            "value": 5
+        },
+        "P0011 ADBE Metal Coefficient": {
+            "name": "金属质感",
+            "value": 100
+        },
+        "P0012 ADBE Reflection Coefficient": {
+            "name": "反射强度",
+            "value": 0
+        },
+        "P0013 ADBE Glossiness Coefficient": {
+            "name": "反射锐度",
+            "value": 100
+        },
+        "P0014 ADBE Fresnel Coefficient": {
+            "name": "反射衰减",
+            "value": 0
+        },
+        "P0015 ADBE Transparency Coefficient": {
+            "name": "透明度",
+            "value": 0
+        },
+        "P0016 ADBE Transp Rolloff": {
+            "name": "透明度衰减",
+            "value": 0
+        },
+        "P0017 ADBE Index of Refraction": {
+            "name": "折射率",
+            "value": 1
+        }
+    },
+    "G0009 ADBE Audio Group": {
+        "S0000 selfProperty": {
+            "name": "音频"
+        },
+        "P0001 ADBE Audio Levels": {
+            "name": "音频电平",
+            "value": [
+                0,
+                0
+            ]
+        }
+    },
+    "G0010 ADBE Layer Sets": {
+        "S0000 selfProperty": {
+            "name": "集"
+        }
+    }
+}
