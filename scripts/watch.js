@@ -3,15 +3,18 @@ const chokidar = require("chokidar");
 const path = require("path");
 
 const srcDir = path.resolve(__dirname, "../src");
+const wipDir = path.resolve(__dirname, "../wip");
 
 // 创建监视器
-const watcher = chokidar.watch(srcDir, {
-    ignored: [/node_modules/, /@types/, /utils/], // 匹配所有以 . 开头的文件夹和文件
+const watcher = chokidar.watch([srcDir, wipDir], {
+    ignored: [/node_modules/, /@types/, /utils/], // 忽略规则
     persistent: true,
     ignoreInitial: true,
 });
 
-console.log(`正在监视 ${srcDir} 目录中的 .tsx 文件修改...`);
+console.log(`正在监视以下目录中的 .tsx 文件修改：`);
+console.log(`1. ${srcDir}`);
+console.log(`2. ${wipDir}`);
 
 // 监听文件变化事件
 watcher.on("change", (filePath) => {

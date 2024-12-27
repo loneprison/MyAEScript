@@ -53,15 +53,12 @@ function setPropertyByData(rootProperty: _PropertyClasses, propertyData: Propert
 }
 
 function setSelfProperty(property: _PropertyClasses, dataObject: PropertyMetadata) {
-    // 设置显示
-    if (_.has(dataObject, 'enabled')) {
-        property.enabled = dataObject.enabled
-    }
-
-    // 设置 property 的名字
-    if (_.has(dataObject, 'name')) {
-        property.name = dataObject.name
-    }
+    const specialProperty = ["height", "width"];
+    _.forOwn(dataObject, (value, key) => {
+        if(_.has(property, key)&&_.indexOf(specialProperty,key)===-1){ 
+            property[key] = value
+        }
+    })
 }
 
 const data:PropertyDataStructure = {
