@@ -1,9 +1,177 @@
 import * as _ from 'soil-ts';
-import getTextDocumentValue from './getTextDocumentValue';
-import sortObjectKeysByData from './sortObjectKeysByData';
+import { getTextDocumentValue, sortObjectKeysByData } from '.';
 
 
 const selfKey = "S0000 selfProperty"
+
+class PropertyParser {
+    private readProperty = [
+        "VectorsGroup",
+        "TextProperties",
+        "Transform",
+        "OptionsGroup",
+        "LayerStyles",
+        "Mask",
+        "Effect",
+        "Audio",
+        "Camera",
+        "Light",
+        "Marker",
+        "TimeRemapping"
+    ]
+    public setReadProperty(readProperty: string[]) {
+        this.readProperty = readProperty
+    }
+
+    public getRootPropertyData(rootProperty: _PropertyClasses): PropertyDataStructure {
+        let data: PropertyDataStructure = {};
+        if (_.isProperty(rootProperty) || _.isPropertyGroup(rootProperty)) {
+            data = processProperty(rootProperty);
+        } else if (_.isLayer(rootProperty)) {
+            data = this.getLayerData(rootProperty);
+        }
+        return data
+    }
+
+    private getLayerData(layer: Layer): PropertyDataStructure {
+        let data: PropertyDataStructure = {};
+
+        if (_.indexOf(this.readProperty, "Marker") !== -1) {
+            const marker = layer.marker
+            if (marker.numKeys > 0) {
+                data = {
+                    ...data,
+                    ...manualGetRootPropertyData(marker)
+                }
+            }
+        }
+
+        if (_.indexOf(this.readProperty, "Transform") !== -1) {
+            let transformData = manualGetRootPropertyData(layer.transform)
+            
+            // 人工排除分离XYZ的值
+            const transformKey = _.keys(transformData)[0];
+            let excludeTransformKey: RegExp;
+            if (transformData.dimensionsSeparated) {
+                excludeTransformKey = /^ADBE Position$/;
+            } else {
+                excludeTransformKey = /ADBE Position_\d+/;
+            }
+            _.forOwn(transformData[transformKey], (value, key) => {
+                if (excludeTransformKey.test(key))
+                    delete transformData[transformKey][key];
+            })
+
+            if (!_.isEmpty(transformData)) {
+                data = { ...data, ...transformData };
+            }
+        }
+
+        if (_.isRasterLayer(layer)) {
+            data[selfKey] = getSelfMetadataByRasterLayer(layer)
+
+            if (_.indexOf(this.readProperty, "Effect") !== -1) {
+                data = { ...data, ...manualGetRootPropertyData(layer.effect) }
+            }
+            
+            if (_.indexOf(this.readProperty, "Mask") !== -1) {
+                data = { ...data, ...manualGetRootPropertyData(layer.mask) }
+            }
+
+            // 图层样式
+            if (_.indexOf(this.readProperty, "LayerStyles") !== -1) {
+                const layerStyle = layer.layerStyle
+                if (layerStyle.canSetEnabled == true) {
+                    let layerStyleDate = {
+                        ...{
+                            "S0000 selfProperty": {
+                                enabled: layerStyle.enabled
+                            }
+                        },
+                        ...manualGetRootPropertyData(layerStyle.blendingOption)
+                    }
+    
+                    for (let i = 2; i <= layerStyle.numProperties; i++) {
+                        if (layerStyle.property(i).canSetEnabled == true) {
+                            layerStyleDate = {
+                                ...layerStyleDate,
+                                ...manualGetRootPropertyData(layerStyle.property(i) as PropertyGroup, true)
+                            }
+                        }
+                    }
+    
+                    data = {
+                        ...data,
+                        ...{ [`G${_.padStart(layerStyle.propertyIndex.toString(), 4, "0")} ${layerStyle.matchName}`]: layerStyleDate }
+                    }
+                }
+            }
+
+            // 几何和材质选项
+            if (layer.threeDLayer) {
+                if (_.indexOf(this.readProperty, "OptionsGroup") !== -1) {
+                    data = {
+                        ...data,
+                        ...manualGetRootPropertyData(layer.geometryOption),
+                        ...manualGetRootPropertyData(layer.materialOption),
+                    }
+                }
+            }
+
+            // 音频
+            if (_.indexOf(this.readProperty, "Audio") !== -1 && layer.hasAudio) {
+                data = {
+                    ...data,
+                    ...manualGetRootPropertyData(layer.audio),
+                }
+            }
+
+            if (_.isAVLayer(layer)) {
+                // 时间重映射
+                if (_.indexOf(this.readProperty, "TimeRemapping") !== -1 &&
+                    layer.canSetTimeRemapEnabled && 
+                    layer.timeRemapEnabled) {
+                    data = {
+                        ...data,
+                        ...manualGetRootPropertyData(layer.timeRemap),
+                    }
+                }
+            } else if (_.isTextLayer(layer)) {
+                if (_.indexOf(this.readProperty, "TextProperties") !== -1) {
+                    // 文本属性处理
+                    let textObject = manualGetRootPropertyData((layer as TextLayer).text)
+                    let textDocument = textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] as PropertyValueData
+                    if (textDocument.value) {
+                        textDocument.value = getTextDocumentValue(textDocument.value)
+                    } else if (textDocument.Keyframe) {
+                        textDocument.Keyframe = _.forEach(textDocument.Keyframe, (Keyframe) => {
+                            Keyframe.keyValue = getTextDocumentValue(Keyframe.keyValue)
+                        })
+                    }
+                    textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] = textDocument
+    
+                    data = { ...data, ...textObject }
+                }
+            } else if (_.isShapeLayer(layer)) {
+                if (_.indexOf(this.readProperty, "VectorsGroup") !== -1) {
+                    data = { ...data, ...manualGetRootPropertyData(_.getProperty(layer, ["ADBE Root Vectors Group"])) }
+                }
+            }
+        } else {
+            data[selfKey] = getSelfMetadataByBaseLayer(layer)
+            if (_.isCameraLayer(layer) && _.indexOf(this.readProperty, "Camera") !== -1) {
+                data = { ...data, ...manualGetRootPropertyData(layer.cameraOption) }
+            } else if (_.isLightLayer(layer) && _.indexOf(this.readProperty, "Light") !== -1) {
+                data = { ...data, ...manualGetRootPropertyData(layer.lightOption) }
+            }
+        }
+
+        return sortObjectKeysByData(data);
+    }
+}
+
+
+
 
 /**
  * 根据给定的图层属性，获取其根属性数据,平时请使用getRootPropertyData,这个函数是为了做手动干预而存在的。
@@ -12,6 +180,7 @@ const selfKey = "S0000 selfProperty"
  * 如果 `isModified` 为 `true`，则强制读取该属性。
  *
  * @param {_PropertyClasses} rootProperty 目标根属性,不一定需要传属性,也可以传图层
+ * @param {Array<string>} [readProperty] 读取的属性,默认为空,如果不传则读取所有属性
  * @returns {PropertyDataStructure} 包含根属性数据的对象。
  * @example
  *  if (_.isLayer(firstLayer)) {
@@ -21,21 +190,20 @@ const selfKey = "S0000 selfProperty"
  *     $.writeln("请选择图层")
  * }
  */
-function getRootPropertyData(rootProperty: _PropertyClasses): PropertyDataStructure {
-    let data: PropertyDataStructure = {};
-    if (_.isProperty(rootProperty) || _.isPropertyGroup(rootProperty)) {
-        data = processProperty(rootProperty);
-    } else if (_.isLayer(rootProperty)) {
-        data = getLayerData(rootProperty);
+function getRootPropertyData(rootProperty: _PropertyClasses, readProperty?: Array<string>): PropertyDataStructure {
+    const parser = new PropertyParser()
+    if (readProperty) {
+        parser.setReadProperty(readProperty)
     }
-    return data
+    return parser.getRootPropertyData(rootProperty)
 }
+
 
 function processProperty(property: _PropertyClasses | PropertyGroup, index?: number): PropertyDataStructure {
     let data: PropertyDataStructure = {};
     const matchName = property?.matchName
 
-    if (_.isPropertyGroup(property)) {
+    if (_.isPropertyGroup(property) || _.isMaskPropertyGroup(property)) {
         // 如果是属性组，递归处理
         const groupKey = `G${_.padStart(index?.toString() || "1", 4, "0")} ${matchName}`;
         data[groupKey] = getPropertyGroupData(property);
@@ -58,143 +226,6 @@ function getLayerDataOld(layer: Layer): PropertyDataStructure {
         data = { ...data, ...propertyData };
     }
     return data
-}
-
-
-function getLayerData(layer: Layer): PropertyDataStructure {
-
-    let data: PropertyDataStructure = {};
-
-    // Marker不应该空标记做value的读取
-    const marker = layer.marker
-    if (marker.numKeys > 0) {
-        data = {
-            ...data,
-            ...manualGetRootPropertyData(marker)
-        }
-    }
-
-
-    // 所有类型图层上都存在transform属性数据
-    let transformData = manualGetRootPropertyData(layer.transform)//返回一个对象
-
-    // 人工排除分离XYZ的值
-    const transformKey = _.keys(transformData)[0];
-    let excludeTransformKey: RegExp;
-    if (transformData.dimensionsSeparated) {
-        excludeTransformKey = /^ADBE Position$/; // 已分离，排除 "ADBE Position"
-    } else {
-        excludeTransformKey = /ADBE Position_\d+/; // 未分离，排除 "ADBE Position_0", "ADBE Position_1", 等
-    }
-    _.forOwn(transformData[transformKey], (value, key) => {
-        if (excludeTransformKey.test(key))
-            delete transformData[transformKey][key];
-    })
-
-    if (!_.isEmpty(transformData)) {
-        data = { ...data, ...transformData };
-    }
-
-
-    if (_.isRasterLayer(layer)) {
-        data[selfKey] = getSelfMetadataByRasterLayer(layer)
-
-        data = {
-            ...data,
-            ...manualGetRootPropertyData(layer.effect),
-        }
-
-        // 图层样式的判断比较复杂...,如果不做干预会全读取,单纯的判断isModified又会导致默认参数无法被读取
-        // 因此需要用canSetEnabled来强行判断
-
-        const layerStyle = layer.layerStyle
-        if (layerStyle.canSetEnabled == true) {
-            let layerStyleDate = {
-                ...{
-                    "S0000 selfProperty": {
-                        enabled: layerStyle.enabled
-                    }
-                },
-                ...manualGetRootPropertyData(layerStyle.blendingOption)
-            }
-
-            for (let i = 2; i <= layerStyle.numProperties; i++) {
-                if (layerStyle.property(i).canSetEnabled == true) {
-                    layerStyleDate = {
-                        ...layerStyleDate,
-                        ...manualGetRootPropertyData(layerStyle.property(i) as PropertyGroup, true)
-                    }
-                }
-            }
-
-            data = {
-                ...data,
-                ...{ [`G${_.padStart(layerStyle.propertyIndex.toString(), 4, "0")} ${layerStyle.matchName}`]: layerStyleDate }
-            }
-        }
-
-        // 几何选项和材质选项
-        // 直接使用geometryOption可以自动匹配是读取ADBE Plane Options Group还是ADBE Extrsn Options Group
-        // 因此在读取这个属性时使用getProperty反而是个错误的选择
-        if (layer.threeDLayer) {
-            data = {
-                ...data,
-                ...manualGetRootPropertyData(layer.geometryOption),
-                ...manualGetRootPropertyData(layer.materialOption),
-            }
-        }
-
-        // 音频简单判断即可
-        if (layer.hasAudio) {
-            data = {
-                ...data,
-                ...manualGetRootPropertyData(layer.audio),
-            }
-        }
-
-        if (_.isAVLayer(layer)) {
-            // 严格来说只有素材/合成上存在时间重映射,不过给了API可以判断所以无所谓
-            if (layer.canSetTimeRemapEnabled && layer.timeRemapEnabled) {
-                data = {
-                    ...data,
-                    ...manualGetRootPropertyData(layer.timeRemap),
-                }
-            }
-
-            if (_.isCompLayer(layer)) {
-                // 暂时还不想写多图层读取,因此合成的子图层暂且搁置
-            }
-
-        } else if (_.isTextLayer(layer)) {
-            // 需要人工排除Text属性
-            let textObject = manualGetRootPropertyData((layer as TextLayer).text)
-            let textDocument = textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] as PropertyValueData
-            if (textDocument.value) {
-                textDocument.value = getTextDocumentValue(textDocument.value)
-            } else if (textDocument.Keyframe) {
-                textDocument.Keyframe = _.forEach(textDocument.Keyframe, (Keyframe) => {
-                    Keyframe.keyValue = getTextDocumentValue(Keyframe.keyValue)
-                })
-            }
-            textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] = textDocument
-
-            data = { ...data, ...textObject }
-        } else if (_.isShapeLayer(layer)) {
-            // 形状图层内容,没问题
-            data = { ...data, ...manualGetRootPropertyData(_.getProperty(layer, ["ADBE Root Vectors Group"])) }
-        }
-    } else {
-        data[selfKey] = getSelfMetadataByBaseLayer(layer)
-        if (_.isCameraLayer(layer)) {
-            // 摄像机属性,没问题
-            data = { ...data, ...manualGetRootPropertyData(layer.cameraOption) }
-        } else if (_.isLightLayer(layer)) {
-            // 灯光选项,没问题
-            data = { ...data, ...manualGetRootPropertyData(layer.lightOption) }
-        }
-    }
-
-    return sortObjectKeysByData(data);
 }
 
 /**

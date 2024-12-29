@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // 文件夹路径
-const folderPath = 'src/utils'; // 请根据实际情况修改路径
+const folderPath = 'utils'; // 请根据实际情况修改路径
 const outputFileName = 'index.ts'; // 输出文件名
 
 // 分析文件内容中的导出信息

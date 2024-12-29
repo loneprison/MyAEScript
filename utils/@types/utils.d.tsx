@@ -45,9 +45,8 @@ type TrackMatteTypeString =
     | "亮度反转遮罩"
     | "无"
 
+
 /**
- * 属性值日期接口。
- * 
  * 该接口用于描述某个属性值的具体数据，包括值、表达式以及关键帧信息。
  * 
  * - `value`：该属性的当前值，可能是任何类型。
@@ -82,7 +81,7 @@ interface PropertyValueData {
     Keyframe?: Keyframe[];
 
     /** 属性的名字，一般在调试以外的场合不作获取 */
-    name?:string;
+    name?: string;
 }
 
 
@@ -151,7 +150,7 @@ interface PropertyMetadata {
  */
 
 interface BaseLayerMetadata extends PropertyMetadata {
-    
+
     /**
      * 图层的自动定向类型，影响图层是否根据运动方向自动定向。
      * 
@@ -356,9 +355,9 @@ interface RasterLayerMetadata extends BaseLayerMetadata {
      */
     trackMatteType?: number;
 
-    threeDLayer?:boolean;
+    threeDLayer?: boolean;
 
-    threeDPerChar?:boolean;
+    threeDPerChar?: boolean;
 
     /**
      * 图层的高度，适用于合成或图层本身的尺寸。
@@ -410,18 +409,18 @@ interface PropertyDataStructure {
 }
 
 // 我不会写继承，所以就手写了
-type canSetTextDocumentData ={
-  text?: string
-  applyFill?: boolean
-  applyStroke?: boolean
-  fillColor?: ThreeDColorValue
-  font?: string
-  fontSize?: number
-  justification?: ParagraphJustification
-  leading?: number
-  strokeColor?: ThreeDColorValue
-  strokeOverFill?: boolean
-  strokeWidth?: number
-  tracking?: number
-  boxTextSize?: [number, number]
+type canSetTextDocumentData = {
+    text?: string
+    applyFill?: boolean
+    applyStroke?: boolean
+    fillColor?: ThreeDColorValue
+    font?: string
+    fontSize?: number
+    justification?: ParagraphJustification
+    leading?: number
+    strokeColor?: ThreeDColorValue
+    strokeOverFill?: boolean
+    strokeWidth?: number
+    tracking?: number
+    boxTextSize?: [number, number]
 }

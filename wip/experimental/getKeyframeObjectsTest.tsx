@@ -4,11 +4,11 @@ const firstLayer = _.getFirstSelectedLayer()
 
 if (firstLayer) {
     // 获取位置属性
-    const position = _.getProperty(firstLayer, ["ADBE Transform Group", "ADBE Position"]);
-    
+    const property = _.getProperty(firstLayer, ["ADBE Mask Parade", "ADBE Mask Atom", "ADBE Mask Shape"]);
+
     // 确保属性存在且有关键帧
-    if (_.isProperty(position) &&_.canSetPropertyValue(position)&& position.numKeys > 0) {
-        const keyframeObjects = _.getKeyframeValues(position)
+    if (_.canSetPropertyValue(property) && property.numKeys > 0) {
+        const keyframeObjects = _.getKeyframeValues(property)
         $.writeln(_.stringify(keyframeObjects))
     } else {
         $.writeln("No keyframes found on the Position property.");
@@ -16,4 +16,3 @@ if (firstLayer) {
 } else {
     $.writeln("No layer selected or invalid selection.");
 }
-
