@@ -1,6 +1,6 @@
 import * as _ from 'soil-ts';
 
-const seftString = [
+const selfString = [
     'enabled',
     'name',
     'autoOrient',
@@ -61,24 +61,16 @@ let UISource = {
         },
         panel1: {
             style: {
-                text: 'Panel',
+                text: 'selfParam',
                 orientation: 'column',
                 alignChildren: ['center', 'fill'],
                 spacing: 10,
                 margins: 10,
             },
         },
-    },
-    group2: {
-        style: {
-            orientation: 'column',
-            alignChildren: ['center', 'fill'],
-            spacing: 10,
-            margins: 0,
-        },
-        panel1: {
+        panel2: {
             style: {
-                text: 'Panel',
+                text: 'PropertyGroup',
                 orientation: 'column',
                 alignChildren: ['left', 'top'],
                 spacing: 10,
@@ -86,6 +78,7 @@ let UISource = {
             }
         },
     },
+
     group3: {
         style: {
             orientation: 'column',
@@ -137,16 +130,16 @@ const createCheckboxGroupedData = (dataArray:Array<string>,name:string) =>_.redu
 );
 
 // 转换逻辑
-const seftGroupedData =createCheckboxGroupedData(seftString,'seftString');
+const selfGroupedData =createCheckboxGroupedData(selfString,'selfString');
 const layerPropertyGroupedData =createCheckboxGroupedData(layerProperty,'layerProperty');
 
 
 UISource.group1.panel1 = {
     ...UISource.group1.panel1,
-    ...seftGroupedData,
+    ...selfGroupedData,
 }
-UISource.group2.panel1 = {
-    ...UISource.group2.panel1,
+UISource.group1.panel2 = {
+    ...UISource.group1.panel2,
     ...layerPropertyGroupedData,
 }
 

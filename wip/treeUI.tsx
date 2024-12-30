@@ -1,5 +1,29 @@
 import * as _ from "soil-ts";
 
+/*
+    所有属性下都存在style和param两个属性，style用于设置控件的样式，param用于设置控件的参数
+    如果直接填写数组则默认为传入param,
+    button1: ["btnName1", undefined, "按钮"]
+    和
+    button1: {param: ["btnName1", undefined, "按钮"]}
+    是等价的
+    如果只需要设置一个简单的属性则可使用数组写法节约代码,
+    但是如果需要设置样式则需要使用对象写法
+    不同的空间拥有不同的参数和样式
+    下面是对于不同控件的参数和样式的说明
+    最顶层的属性是窗口本身的最底层属性,
+    其存在以下样式:
+    {
+        text: "Tree UI 控件示例", // 窗口标题
+        orientation: "column", // 排列方式
+        alignChildren: ["fill", "fill"], // 对齐方式
+        spacing: 10, // 控件间距
+        margins: 10 // 控件边距
+    }
+
+*/
+
+
 // 基本配置示例
 const UIExamples = {
     config: {

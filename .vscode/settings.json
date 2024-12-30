@@ -8,7 +8,8 @@
     "loneprison",
     "Bezier",
     "outro",
-    "PSOFT"
+    "PSOFT",
+    "edittext"
   ],
   "files.associations": {
         "*.json": "jsonc"
