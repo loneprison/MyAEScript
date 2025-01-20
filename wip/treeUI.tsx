@@ -12,14 +12,56 @@ import * as _ from "soil-ts";
     不同的空间拥有不同的参数和样式
     下面是对于不同控件的参数和样式的说明
     最顶层的属性是窗口本身的最底层属性,
+    其存在以下配置:
+    config:{
+        dockable: true, // 是否可以停靠
+        show: true, // 是否显示
+        singleton: false, // 是否是单例模式
+        layoutMode: 0 // 窗口布局模式
+    },
     其存在以下样式:
-    {
+    style:{
         text: "Tree UI 控件示例", // 窗口标题
+        preferredSize:[width, height], // 窗口大小
         orientation: "column", // 排列方式
         alignChildren: ["fill", "fill"], // 对齐方式
         spacing: 10, // 控件间距
         margins: 10 // 控件边距
-    }
+    },
+    其存在以下参数:
+    param:[
+        "dialog",   // 本应该是窗口类型,但是由于tree的做了自动推导，因此这项其实是无效项
+        undefined,  // 窗口标题,不过这里的优先级不如style中的text,因此也可以直接undefined
+        undefined,  // 窗口大小,在AE中这是一个无效或者说会引起报错的参数（也有可能我用错了）,因此最好填undefined
+        {
+            su1PanelCoordinates: true, // 是否使用SU1坐标
+            maximizeButton: true, // 是否显示最大化按钮
+            minimizeButton: true, // 是否显示最小化按钮
+            independent: true, // 是否独立
+            borderless: true, // 是否无边框
+            resizeable: true // 是否可调整大小
+        }           // 特性配置
+    ]
+    
+    控件类分为基础控件、选择控件、容器控件、数值控件
+    基础控件:
+        button: 按钮
+        edittext: 文本框
+    选择控件:
+        checkbox: 复选框
+        dropdownlist: 下拉列表
+    容器控件:
+        tabbedpanel: 标签页
+        treeview: 树形视图
+    数值控件:
+        slider: 滑动条
+        progressbar: 进度条
+    所有控件有拥有一些通用的方法,可以直接写入style中也可以时候get并添加
+        onClick: 点击事件
+        onChange: 文本改变事件
+        onChanging: 滑动中事件
+        onDoubleClick: 双击事件
+        onChanging: 滑动中事件
 
 */
 
