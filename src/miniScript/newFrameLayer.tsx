@@ -59,14 +59,11 @@ function createFrameLayer(nowItem: CompItem): void {
     shapeLayer.guideLayer = true
 }
 
-function main(): void {
+_.setUndoGroup("newFrameLayer", ()=>{
     const nowItem = _.getActiveComp();
     if (!nowItem || !_.isCompItem(nowItem)) {
         return showError('请先选择一个图层/合成');
     }
 
     createFrameLayer(nowItem);
-}
-
-// 使用 setUndoGroup 包裹 main 函数以支持撤销
-_.setUndoGroup("newFrameLayer", main);
+});

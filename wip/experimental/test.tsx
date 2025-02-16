@@ -1,2 +1,3 @@
-let x = 1, y = 2;
-[x, y] = [y, x]
+import { copyToClipboardAdvance } from "../../utils";
+
+copyToClipboardAdvance("中文测试")
