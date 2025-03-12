@@ -9,17 +9,17 @@
  */
 
 function copyToClipboardAdvance(text) {
-    var tempFile = new File(Folder.temp.fullName + '/temp.txt');
+    let tempFile = new File(Folder.temp.fullName + '/temp.txt');
     tempFile.open('w');
     tempFile.encoding = 'UTF-8';
     tempFile.write(text);
     tempFile.close();
 
     if (Folder.fs === 'Windows') {
-        var cmdCommand = 'cmd.exe /c cmd.exe /c "chcp 65001 > nul &&type ' + tempFile.fsName + ' | clip"';
+        const cmdCommand = 'cmd.exe /c cmd.exe /c "chcp 65001 > nul &&type ' + tempFile.fsName + ' | clip"';
         system.callSystem(cmdCommand);
     } else if (Folder.fs === 'Macintosh') {
-        var osaCommand = 'cat "' + tempFile.fsName + '" | pbcopy';
+        const osaCommand = 'cat "' + tempFile.fsName + '" | pbcopy';
         system.callSystem("osascript -e '" + osaCommand + "'");
     } else {
         alert('Unsupported operating system.');

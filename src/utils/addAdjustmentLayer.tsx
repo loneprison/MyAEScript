@@ -1,4 +1,3 @@
-import * as _ from 'soil-ts';
 import setPropertyByData from './setPropertyByData';
 
 /**
@@ -23,7 +22,7 @@ import setPropertyByData from './setPropertyByData';
  * ```
  */
 
-function addAdjustmentLayer(compItem: CompItem, useShapeLayer: Boolean = true, layerName: string = "adjustment", layerColor: ThreeDColorValue = [1, 1, 1]): AVLayer | ShapeLayer {
+function addAdjustmentLayer(compItem: CompItem, useShapeLayer: boolean = true, layerName: string = "adjustment", layerColor: ThreeDColorValue = [1, 1, 1]): AVLayer | ShapeLayer {
     let newAdjust: AVLayer | ShapeLayer
     const getLayers: LayerCollection = compItem.layers
     if (useShapeLayer) {

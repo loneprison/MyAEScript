@@ -8,7 +8,7 @@ function sortLayersByName(layerArray: Layer[], order: string = 'asc'): Layer[] {
     return layerArray.sort((a, b) => {
         // 提取图层名称中的数字部分和字符部分
         const getSortKey = (name: string) => {
-            const numberPart = name.match(/\d+$/);  // 提取结尾的数字部分（如果有）
+            const numberPart = /\d+$/.exec(name);  // 提取结尾的数字部分（如果有）
             const textPart = name.replace(/\d+$/, ''); // 提取数字以外的字符部分
 
             // 返回一个包含数字和字符的对象，确保数字部分优先

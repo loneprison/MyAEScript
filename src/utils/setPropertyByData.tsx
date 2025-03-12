@@ -8,13 +8,13 @@ function setPropertyValueByData(property: Property, dataObject: PropertyValueDat
         // 对于对象数据，最好的选择是直接在原属性上更改
         if (_.isObject(property.value)) {
             const objectValue = dataObject.value;
-            const textValue = property.value;
+            const objValue = property.value;
             _.forOwn(objectValue, (value, key) => {
                 if (value) {
-                    textValue[key] = value;
+                    objValue[key] = value;
                 }
             });
-            property.setValue(textValue);
+            property.setValue(objValue);
         } else {
             property.setValue(dataObject.value);
         }
@@ -45,7 +45,7 @@ function setSelfProperty(property: _PropertyClasses, dataObject: PropertyMetadat
     };
 
     if (_.isLayer(property)) {
-        const layer = property as Layer;
+        const layer = property;
         let layerData = dataObject as RasterLayerMetadata; // 因为浅拷贝所以layerData实际上还是dataObject的引用，不过这样写在ts中可以更好的提示类型
 
         // 由于锁定会影响到属性的设置，因此需要先解锁

@@ -405,7 +405,7 @@ interface RasterLayerMetadata extends BaseLayerMetadata {
  * ```
  */
 interface PropertyDataStructure {
-    [key: string]: PropertyValueData | PropertyDataStructure | (PropertyMetadata & any);
+    [key: string]: PropertyValueData | PropertyDataStructure | PropertyMetadata;
 }
 
 // 我不会写继承，所以就手写了

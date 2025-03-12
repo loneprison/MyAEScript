@@ -8,7 +8,7 @@ function baseSortObjectKeys<T extends Record<string, any>>(
     // 获取并排序对象的键名，使用传入的自定义排序规则
     const sortedKeys = customSort
         ? _.keys(obj).sort(customSort) // 如果传入自定义排序规则，使用它
-        : _.keys(obj).sort(); // 否则按默认字典顺序排序
+        : _.keys(obj).sort((a, b) => a.localeCompare(b)); // 否则按默认字典顺序排序
 
     // 重新生成排序后的对象
     const sortedObj: Record<string, any> = {};
@@ -35,8 +35,8 @@ function baseSortObjectKeys<T extends Record<string, any>>(
  */
 function sortObjectKeysByData(object:Record<string, any>) {
     return baseSortObjectKeys(object, (a: string, b: string) => {
-        const numA = parseInt(a.match(/\d+/)?.[0] || "0", 10);
-        const numB = parseInt(b.match(/\d+/)?.[0] || "0", 10);
+        const numA = parseInt(/\d+/.exec(a)?.[0] || "0", 10);
+        const numB = parseInt(/\d+/.exec(b)?.[0] || "0", 10);
 
         if (numA === numB) {
             return a.localeCompare(b); // 字母排序

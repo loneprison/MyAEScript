@@ -1,6 +1,4 @@
 import * as _ from 'soil-ts';
-// import sortLayersByIndex from '../utils/sortLayersByIndex';
-// import sortLayersByName from '../utils/sortLayersByName';
 import {sortLayersByIndex,sortLayersByName} from '../../utils/index';
 
 

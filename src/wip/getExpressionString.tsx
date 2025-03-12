@@ -1,5 +1,5 @@
 import * as _ from 'soil-ts';
-import { copyToClipboard, copyToClipboardAdvance } from '../utils';
+import {  copyToClipboardAdvance } from '../utils';
 
 const firstProperty = _.getFirstSelectedProperty();
 

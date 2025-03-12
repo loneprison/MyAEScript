@@ -18,8 +18,8 @@
  */
 
 function copyToClipboard(content: string): void {
-    var cmd: string;
-    var isWindows = $.os.indexOf("Windows") !== -1;
+    let cmd: string;
+    const isWindows = $.os.indexOf("Windows") !== -1;
 
     // 将内容转换为字符串,TS里面其实没必要这个步骤，但是为了考虑不完全在TS里编译出来的代码的情况加上这条
     content = content.toString();
