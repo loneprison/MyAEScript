@@ -10,15 +10,14 @@ function getItemFromPath(pathArray: string[]): _ItemClasses | undefined {
         const folderName = pathArray[i];
         if (i == 0) {
             currentItem = _.findItem(project, (item) => item.name === folderName);
-        } else {
-            if (_.isFolderItem(currentItem)) {
-                if (i == pathArray.length - 1) {
-                    return _.findItem(currentItem, (item) => item.name === folderName);
-                }
-
-                currentItem = _.findItem(currentItem, (item) => item.name === folderName && _.isFolderItem(item));
+        } else if (_.isFolderItem(currentItem)) {
+            if (i == pathArray.length - 1) {
+                return _.findItem(currentItem, (item) => item.name === folderName);
             }
+
+            currentItem = _.findItem(currentItem, (item) => item.name === folderName && _.isFolderItem(item));
         }
+
     }
 
 
@@ -47,10 +46,10 @@ function setTest(str: string): PropertyDataStructure {
 
 function _readJSON() {
     const path = app.project.file;
-    _.isFolder(path)&&app.project.setDefaultImportFolder(path);
+    _.isFolder(path) && app.project.setDefaultImportFolder(path);
 
     const file = new File(app.project.file.path);
-    let JSONFile = file.openDlg("Open a file", "Acceptable Files:*.json") as File ;
+    let JSONFile = file.openDlg("Open a file", "Acceptable Files:*.json") as File;
     JSONFile.open("r");
     const readJSON = JSONFile.read();
     JSONFile.close();

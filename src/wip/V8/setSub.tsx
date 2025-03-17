@@ -10,7 +10,7 @@ function getItemFromPath(pathArray: string[]): _ItemClasses | undefined {
         const folderName = pathArray[i];
         if (i == 0) {
             currentItem = _.findItem(project, (item) => item.name === folderName);
-        } else {
+        } else
             if (_.isFolderItem(currentItem)) {
                 if (i == pathArray.length - 1) {
                     return _.findItem(currentItem, (item) => item.name === folderName);
@@ -18,7 +18,6 @@ function getItemFromPath(pathArray: string[]): _ItemClasses | undefined {
 
                 currentItem = _.findItem(currentItem, (item) => item.name === folderName && _.isFolderItem(item));
             }
-        }
     }
 
 
@@ -78,16 +77,16 @@ _.setUndoGroup("test", () => {
             const layers: { layerIndex: number, text: string }[] = [];
             _.forEach(value, (item, index) => {
                 if (_.has(item, 'song_name')) {
-                    layers.push({ layerIndex: 1 + index*4, text: item.song_name as string });
+                    layers.push({ layerIndex: 1 + index * 4, text: item.song_name as string });
                 }
                 if (_.has(item, 'id')) {
-                    layers.push({ layerIndex: 2 + index*4, text: item.id as string });
+                    layers.push({ layerIndex: 2 + index * 4, text: item.id as string });
                 }
                 if (_.has(item, 'singer')) {
-                    layers.push({ layerIndex: 3 + index*4, text: item.singer as string });
+                    layers.push({ layerIndex: 3 + index * 4, text: item.singer as string });
                 }
                 if (_.has(item, 'coop')) {
-                    layers.push({ layerIndex: 4 + index*4, text: item.coop as string });
+                    layers.push({ layerIndex: 4 + index * 4, text: item.coop as string });
                 }
             })
 

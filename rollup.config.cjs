@@ -1,34 +1,30 @@
-const fs = require("fs"); // 引入 fs 模块
-const path = require("path");
 const typescript = require("@rollup/plugin-typescript");
 const terser = require("@rollup/plugin-terser");
-const { readdirSync, statSync, copyFileSync, rmSync } = require("fs");
+const { readdirSync, statSync, copyFileSync, rmSync, readFileSync } = require("fs");
 const { resolve, extname, basename, dirname, relative } = require("path");
 
 const minutes = 0.08;
-const inputDirs = [resolve(__dirname, "src"), resolve(__dirname, "wip")];
+const inputDir = resolve(__dirname, "src");
 const distDir = resolve(__dirname, "dist");
 const now = Date.now();
 const modifiedTimeLimit = now - minutes * 60 * 1000;
 
 // 递归遍历目录
-const walk = (dirs) => {
+const walk = (dir) => {
     const files = [];
-    dirs.forEach((dir) => {
-        readdirSync(dir).forEach((f) => {
-            const fullPath = resolve(dir, f);
-            const stats = statSync(fullPath);
-            if (stats.isDirectory()) {
-                files.push(...walk([fullPath]));
-            } else if (extname(f) === ".tsx" && stats.mtimeMs >= modifiedTimeLimit) {
-                files.push(fullPath);
-            }
-        });
+    readdirSync(dir).forEach((f) => {
+        const fullPath = resolve(dir, f);
+        const stats = statSync(fullPath);
+        if (stats.isDirectory()) {
+            files.push(...walk(fullPath));
+        } else if (extname(f) === ".tsx" && stats.mtimeMs >= modifiedTimeLimit) {
+            files.push(fullPath);
+        }
     });
     return files;
 };
 
-const recentFiles = walk(inputDirs);
+const recentFiles = walk(inputDir);
 
 if (recentFiles.length === 0) {
     console.log(`没有在过去 ${minutes} 分钟内修改的 .tsx 文件。`);
@@ -36,40 +32,52 @@ if (recentFiles.length === 0) {
 }
 
 // 清理 dist 目录中多余的文件和目录
-const cleanDist = (inputDirs, distDir) => {
-    const allDistFiles = readdirSync(distDir).map((file) => resolve(distDir, file));
+const cleanDist = (srcDir, distDir) => {
+    const srcFiles = new Set(readdirSync(srcDir).map((f) => resolve(srcDir, f)));
+    const distFiles = readdirSync(distDir).map((f) => resolve(distDir, f));
 
-    inputDirs.forEach((srcDir) => {
-        const subDir = srcDir.includes("src") ? "src" : "wip";
-        const currentDistDir = resolve(distDir, subDir);
+    distFiles.forEach((distFile) => {
+        const stats = statSync(distFile);
+        const distExt = extname(distFile);
+        const relPath = distFile.slice(distDir.length + 1); // 获取相对路径
+        const srcFile = resolve(srcDir, relPath.replace(/\.jsx$/, ".tsx")); // 假设它可能是由 .tsx 生成
 
-        if (!fs.existsSync(currentDistDir)) {
-            console.log(`目标目录 ${currentDistDir} 不存在，创建目录...`);
-            fs.mkdirSync(currentDistDir, { recursive: true });
-        }
-
-        // 遍历 dist 中的文件
-        const distFiles = readdirSync(currentDistDir).map((file) =>
-            resolve(currentDistDir, file)
-        );
-        distFiles.forEach((distFile) => {
-            const relPath = relative(currentDistDir, distFile).replace(
-                /\.jsx$/,
-                ".tsx"
-            );
-            const srcFile = resolve(srcDir, relPath);
-
-            if (!fs.existsSync(srcFile)) {
-                console.log(`删除多余文件或目录: ${distFile}`);
+        if (stats.isDirectory()) {
+            // 如果是目录，递归处理之前先检查 src 中是否存在该目录
+            if (srcFiles.has(srcFile)) {
+                cleanDist(srcFile, distFile); // 如果 src 中存在该目录，才递归
+            } else {
+                // 如果 src 中没有该目录，删除 dist 中的目录
+                console.log(`删除目录 ${distFile}`);
                 rmSync(distFile, { recursive: true, force: true });
             }
-        });
+            return;
+        }
+
+        const srcExists = srcFiles.has(srcFile);
+
+        if (srcExists) {
+            const srcExt = extname(srcFile);
+
+            if (distExt === ".jsx" && srcExt === ".tsx") {
+                // 如果 .jsx 文件对应 .tsx 文件，则保留
+                return;
+            }
+
+            // 删除与 .tsx 文件同名但后缀不为 .jsx 的文件
+            console.log(`删除文件 ${distFile}`);
+            rmSync(distFile, { force: true });
+        } else {
+            // 如果 src 中不存在对应的文件，删除 dist 文件
+            console.log(`删除文件 ${distFile}`);
+            rmSync(distFile, { force: true });
+        }
     });
 };
 
 // 清理 dist 目录
 console.log("清理 dist 目录中...");
-cleanDist(inputDirs, distDir);
+cleanDist(inputDir, distDir);
 console.log("dist 目录清理完成。");
 
 // 复制非 .tsx 文件
@@ -78,7 +86,7 @@ const copyNonTsxFiles = (inputPath, outputPath) => {
     const outputDir = dirname(outputPath);
 
     try {
-        fs.mkdirSync(outputDir, { recursive: true });
+        require("fs").mkdirSync(outputDir, { recursive: true });
     } catch (e) {
         console.error(`无法创建输出目录 ${outputDir}: ${e.message}`);
     }
@@ -94,23 +102,36 @@ const copyNonTsxFiles = (inputPath, outputPath) => {
     });
 };
 
-// 配置打包
+// 自定义插件：替换占位符为图片数据
+// 使用方法：在 .tsx 文件中使用 __IMAGE_PLACEHOLDER__(图片路径) 占位符，例如 __IMAGE_PLACEHOLDER__(./images/icon.png)
+const replacePlaceholders = () => {
+    return {
+        name: 'replace-placeholders',
+        transform(code, id) {
+            if (extname(id) !== '.tsx') return null;
+
+            // 替换占位符
+            const placeholderRegex = /__IMAGE_PLACEHOLDER__\((.*?)\)/g;
+            let match;
+            let transformedCode = code;
+
+            while ((match = placeholderRegex.exec(code)) !== null) {
+                const imagePath = match[1];
+                const imageData = readFileSync(resolve(__dirname, imagePath), 'base64');
+                transformedCode = transformedCode.replace(match[0], `"data:image/png;base64,${imageData}"`);
+            }
+
+            return {
+                code: transformedCode,
+                map: null
+            };
+        }
+    };
+};
+
 const configs = recentFiles.map((file) => {
     const inputPath = file;
-
-    // 确定文件所属的源目录
-    const sourceDir = inputDirs.find((dir) => file.startsWith(dir));
-    if (!sourceDir) {
-        return; // 如果文件不在 src 或 wip 中，跳过
-    }
-
-    // 获取相对路径，并在 dist 下根据源目录创建子目录
-    const relativePath = relative(sourceDir, file);
-    const subDir = sourceDir.includes("src") ? "src" : "wip"; // 根据源目录区分子目录
-    const outputPath = resolve(distDir, subDir, relativePath).replace(
-        extname(file),
-        ".jsx"
-    );
+    const outputPath = file.replace(inputDir, distDir).replace(extname(file), ".jsx");
 
     // 复制非 .tsx 文件
     copyNonTsxFiles(inputPath, outputPath);
@@ -119,12 +140,14 @@ const configs = recentFiles.map((file) => {
         input: inputPath,
         output: {
             file: outputPath,
+            // format: "iife",
             intro: "(function () {",
             outro: "}).call(this);",
             sourcemap: false,
         },
         plugins: [
             typescript(),
+            replacePlaceholders(), // 添加自定义插件
             terser({
                 compress: false,
                 mangle: false,

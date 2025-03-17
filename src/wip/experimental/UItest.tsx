@@ -22,9 +22,9 @@ let UISource = {
 // 创建UI窗口
 let elements = _.tree.parse(UISource);
 
-var button1 = elements.getElementById("button1") as Button;
+let button1 = elements.getElementById<Button>("button1");
 button1.onClick = function () {
-    var group1 = elements.getElementById("group1") as Group;
+    let group1 = elements.getElementById<Group>("group1");
 
     group1.add("button", [0, 0, 50, 50], "按钮2");
 

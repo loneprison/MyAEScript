@@ -36,20 +36,35 @@ class PropertyParser {
     private getLayerData(layer: Layer): PropertyDataStructure {
         let data: PropertyDataStructure = {};
 
+        data = this.processMarker(layer, data);
+        data = this.processTransform(layer, data);
+
+        if (_.isRasterLayer(layer)) {
+            data = this.processRasterLayer(layer, data);
+        } else {
+            data = this.processNonRasterLayer(layer, data);
+        }
+
+        return sortObjectKeysByData(data);
+    }
+
+    private processMarker(layer: Layer, data: PropertyDataStructure): PropertyDataStructure {
         if (_.indexOf(this.readProperty, "Marker") !== -1) {
-            const marker = layer.marker
+            const marker = layer.marker;
             if (marker.numKeys > 0) {
                 data = {
                     ...data,
                     ...manualGetRootPropertyData(marker)
-                }
+                };
             }
         }
+        return data;
+    }
 
+    private processTransform(layer: Layer, data: PropertyDataStructure): PropertyDataStructure {
         if (_.indexOf(this.readProperty, "Transform") !== -1) {
-            let transformData = manualGetRootPropertyData(layer.transform)
-            
-            // 人工排除分离XYZ的值
+            let transformData = manualGetRootPropertyData(layer.transform);
+
             const transformKey = _.keys(transformData)[0];
             let excludeTransformKey: RegExp;
             if (transformData.dimensionsSeparated) {
@@ -60,113 +75,149 @@ class PropertyParser {
             _.forOwn(transformData[transformKey], (value, key) => {
                 if (excludeTransformKey.test(key))
                     delete transformData[transformKey][key];
-            })
+            });
 
             if (!_.isEmpty(transformData)) {
                 data = { ...data, ...transformData };
             }
         }
+        return data;
+    }
 
-        if (_.isRasterLayer(layer)) {
-            data[selfKey] = getSelfMetadataByRasterLayer(layer)
+    private processRasterLayer(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
+        data[selfKey] = getSelfMetadataByRasterLayer(layer);
 
-            if (_.indexOf(this.readProperty, "Effect") !== -1) {
-                data = { ...data, ...manualGetRootPropertyData(layer.effect) }
-            }
-            
-            if (_.indexOf(this.readProperty, "Mask") !== -1) {
-                data = { ...data, ...manualGetRootPropertyData(layer.mask) }
-            }
+        data = this.processEffects(layer, data);
+        data = this.processMasks(layer, data);
+        data = this.processLayerStyles(layer, data);
+        data = this.processOptionsGroup(layer, data);
+        data = this.processAudio(layer, data);
+        data = this.processTimeRemapping(layer, data);
+        data = this.processTextProperties(layer, data);
+        data = this.processVectorsGroup(layer, data);
 
-            // 图层样式
-            if (_.indexOf(this.readProperty, "LayerStyles") !== -1) {
-                const layerStyle = layer.layerStyle
-                if (layerStyle.canSetEnabled == true) {
-                    let layerStyleDate = {
-                        ...{
-                            "S0000 selfProperty": {
-                                enabled: layerStyle.enabled
-                            }
-                        },
-                        ...manualGetRootPropertyData(layerStyle.blendingOption)
-                    }
-    
-                    for (let i = 2; i <= layerStyle.numProperties; i++) {
-                        if (layerStyle.property(i).canSetEnabled == true) {
-                            layerStyleDate = {
-                                ...layerStyleDate,
-                                ...manualGetRootPropertyData(layerStyle.property(i) as PropertyGroup, true)
-                            }
+        return data;
+    }
+
+    private processNonRasterLayer(layer: Layer, data: PropertyDataStructure): PropertyDataStructure {
+        data[selfKey] = getSelfMetadataByBaseLayer(layer);
+        if (_.isCameraLayer(layer) && _.indexOf(this.readProperty, "Camera") !== -1) {
+            data = { ...data, ...manualGetRootPropertyData(layer.cameraOption) };
+        } else if (_.isLightLayer(layer) && _.indexOf(this.readProperty, "Light") !== -1) {
+            data = { ...data, ...manualGetRootPropertyData(layer.lightOption) };
+        }
+        return data;
+    }
+
+    private processEffects(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
+        if (_.indexOf(this.readProperty, "Effect") !== -1) {
+            data = { ...data, ...manualGetRootPropertyData(layer.effect) };
+        }
+        return data;
+    }
+
+    private processMasks(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
+        if (_.indexOf(this.readProperty, "Mask") !== -1) {
+            data = { ...data, ...manualGetRootPropertyData(layer.mask) };
+        }
+        return data;
+    }
+
+    private processLayerStyles(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
+        if (_.indexOf(this.readProperty, "LayerStyles") !== -1) {
+            const layerStyle = layer.layerStyle;
+            if (layerStyle.canSetEnabled) {
+                let layerStyleDate = {
+                    ...{
+                        "S0000 selfProperty": {
+                            enabled: layerStyle.enabled
                         }
-                    }
-    
-                    data = {
-                        ...data,
-                        ...{ [`G${_.padStart(layerStyle.propertyIndex.toString(), 4, "0")} ${layerStyle.matchName}`]: layerStyleDate }
+                    },
+                    ...manualGetRootPropertyData(layerStyle.blendingOption)
+                };
+
+                for (let i = 2; i <= layerStyle.numProperties; i++) {
+                    if (layerStyle.property(i).canSetEnabled) {
+                        layerStyleDate = {
+                            ...layerStyleDate,
+                            ...manualGetRootPropertyData(layerStyle.property(i) as PropertyGroup, true)
+                        };
                     }
                 }
-            }
 
-            // 几何和材质选项
-            if (layer.threeDLayer) {
-                if (_.indexOf(this.readProperty, "OptionsGroup") !== -1) {
-                    data = {
-                        ...data,
-                        ...manualGetRootPropertyData(layer.geometryOption),
-                        ...manualGetRootPropertyData(layer.materialOption),
-                    }
-                }
-            }
-
-            // 音频
-            if (_.indexOf(this.readProperty, "Audio") !== -1 && layer.hasAudio) {
                 data = {
                     ...data,
-                    ...manualGetRootPropertyData(layer.audio),
-                }
-            }
-
-            if (_.isAVLayer(layer)) {
-                // 时间重映射
-                if (_.indexOf(this.readProperty, "TimeRemapping") !== -1 &&
-                    layer.canSetTimeRemapEnabled && 
-                    layer.timeRemapEnabled) {
-                    data = {
-                        ...data,
-                        ...manualGetRootPropertyData(layer.timeRemap),
-                    }
-                }
-            } else if (_.isTextLayer(layer)) {
-                if (_.indexOf(this.readProperty, "TextProperties") !== -1) {
-                    // 文本属性处理
-                    let textObject = manualGetRootPropertyData((layer as TextLayer).text)
-                    let textDocument = textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] as PropertyValueData
-                    if (textDocument.value) {
-                        textDocument.value = getTextDocumentValue(textDocument.value)
-                    } else if (textDocument.Keyframe) {
-                        textDocument.Keyframe = _.forEach(textDocument.Keyframe, (Keyframe) => {
-                            Keyframe.keyValue = getTextDocumentValue(Keyframe.keyValue)
-                        })
-                    }
-                    textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] = textDocument
-    
-                    data = { ...data, ...textObject }
-                }
-            } else if (_.isShapeLayer(layer)) {
-                if (_.indexOf(this.readProperty, "VectorsGroup") !== -1) {
-                    data = { ...data, ...manualGetRootPropertyData(_.getProperty(layer, ["ADBE Root Vectors Group"])) }
-                }
-            }
-        } else {
-            data[selfKey] = getSelfMetadataByBaseLayer(layer)
-            if (_.isCameraLayer(layer) && _.indexOf(this.readProperty, "Camera") !== -1) {
-                data = { ...data, ...manualGetRootPropertyData(layer.cameraOption) }
-            } else if (_.isLightLayer(layer) && _.indexOf(this.readProperty, "Light") !== -1) {
-                data = { ...data, ...manualGetRootPropertyData(layer.lightOption) }
+                    ...{ [`G${_.padStart(layerStyle.propertyIndex.toString(), 4, "0")} ${layerStyle.matchName}`]: layerStyleDate }
+                };
             }
         }
+        return data;
+    }
 
-        return sortObjectKeysByData(data);
+    private processOptionsGroup(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
+        if (layer.threeDLayer) {
+            if (_.indexOf(this.readProperty, "OptionsGroup") !== -1) {
+                data = {
+                    ...data,
+                    ...manualGetRootPropertyData(layer.geometryOption),
+                    ...manualGetRootPropertyData(layer.materialOption),
+                };
+            }
+        }
+        return data;
+    }
+
+    private processAudio(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
+        if (_.indexOf(this.readProperty, "Audio") !== -1 && layer.hasAudio) {
+            data = {
+                ...data,
+                ...manualGetRootPropertyData(layer.audio),
+            };
+        }
+        return data;
+    }
+
+    private processTimeRemapping(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
+        if (_.isAVLayer(layer)) {
+            if (_.indexOf(this.readProperty, "TimeRemapping") !== -1 &&
+                layer.canSetTimeRemapEnabled && 
+                layer.timeRemapEnabled) {
+                data = {
+                    ...data,
+                    ...manualGetRootPropertyData(layer.timeRemap),
+                };
+            }
+        }
+        return data;
+    }
+
+    private processTextProperties(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
+        if (_.isTextLayer(layer)) {
+            if (_.indexOf(this.readProperty, "TextProperties") !== -1) {
+                let textObject = manualGetRootPropertyData(layer.text);
+                let textDocument = textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] as PropertyValueData;
+                if (textDocument.value) {
+                    textDocument.value = getTextDocumentValue(textDocument.value);
+                } else if (textDocument.Keyframe) {
+                    textDocument.Keyframe = _.forEach(textDocument.Keyframe, (Keyframe) => {
+                        Keyframe.keyValue = getTextDocumentValue(Keyframe.keyValue);
+                    });
+                }
+                textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] = textDocument;
+
+                data = { ...data, ...textObject };
+            }
+        }
+        return data;
+    }
+
+    private processVectorsGroup(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
+        if (_.isShapeLayer(layer)) {
+            if (_.indexOf(this.readProperty, "VectorsGroup") !== -1) {
+                data = { ...data, ...manualGetRootPropertyData(_.getProperty(layer, ["ADBE Root Vectors Group"])) };
+            }
+        }
+        return data;
     }
 }
 
@@ -242,7 +293,7 @@ function getLayerDataOld(layer: Layer): PropertyDataStructure {
  * const propertyData = manualGetRootPropertyData(rootProperty);
  * $.writeln(_.stringify(propertyData));
  */
-function manualGetRootPropertyData(rootProperty: CanSetValueProperty | PropertyGroup, isModified: Boolean = rootProperty.isModified): PropertyDataStructure {
+function manualGetRootPropertyData(rootProperty: CanSetValueProperty | PropertyGroup, isModified: boolean = rootProperty.isModified): PropertyDataStructure {
     let data: PropertyDataStructure = {};
     if (!isModified) return data
     const { prefix, nested } = _.isProperty(rootProperty)
@@ -296,7 +347,7 @@ function getSelfMetadata(propertyGroup: PropertyGroup, readName: boolean = false
     if (readName) {
         data.name = propertyGroup.name;
     } else if (_.isNamedGroupType(propertyGroup) && _.isIndexedGroupType(propertyGroup.propertyGroup(1))) {
-        data.name = propertyGroup.name;
+        data.name = propertyGroup.name
     }
 
     return data;

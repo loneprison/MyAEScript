@@ -9,7 +9,11 @@
     "Bezier",
     "outro",
     "PSOFT",
-    "edittext"
+    "edittext",
+    "osascript",
+    "dockable",
+    "resizeable",
+    "tabbedpanel"
   ],
   "files.associations": {
         "*.json": "jsonc"

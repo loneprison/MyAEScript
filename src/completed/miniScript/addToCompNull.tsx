@@ -2,7 +2,7 @@ import * as _ from 'soil-ts';
 import { setPropertyByData } from '../../utils';
 
 const activeComp = _.getActiveComp();
-const fristLayer = _.getFirstSelectedLayer();
+const firstLayer = _.getFirstSelectedLayer();
 const layerName = "目标点图层";
 
 if (activeComp) {
@@ -32,17 +32,17 @@ if (activeComp) {
             }
         }
     })
-    if (fristLayer) {
-        newNullLayer.moveBefore(fristLayer);
+    if (firstLayer) {
+        newNullLayer.moveBefore(firstLayer);
 
         setPropertyByData(newNullLayer, {
             "S0000 selfProperty": {
-                "name": `${fristLayer.name}-toComp`,
+                "name": `${firstLayer.name}-toComp`,
             },
             "G0005 ADBE Effect Parade": {
                 [`G0001 ${layerName}`]: {
                     "P0001 ADBE Layer Control-0001": {
-                        value: fristLayer.index
+                        value: firstLayer.index
                     }
                 }
             }

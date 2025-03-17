@@ -90,13 +90,13 @@ function setSelfProperty(property: _PropertyClasses, dataObject: PropertyMetadat
  * @param rootProperty 根属性
  * @param propertyData 数据结构
  * @example
- * const fristLayer = _.getFirstLayer();
+ * const firstLayer = _.getFirstLayer();
  * const data = {
  *         "S0000 selfProperty": {
  *            name: "test"
  *        }
  * }
- * setPropertyByData(fristLayer, data);
+ * setPropertyByData(firstLayer, data);
  */
 function setPropertyByData(rootProperty: _PropertyClasses, propertyData: PropertyDataStructure) {
     _.forOwn(propertyData, (value, key) => {
