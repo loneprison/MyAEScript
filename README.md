@@ -6,7 +6,7 @@
 
 这个项目的工作环境继承自 [RaymondClr/ae_script_hub](https://github.com/RaymondClr/ae_script_hub)。  
 同时，项目几乎完全依赖 [RaymondClr/Soil](https://github.com/RaymondClr/Soil)。  
-在 `Library` 文件夹内存放了一些经过二次加工的函数，用于处理一些稍微复杂的情况。
+在 `utils` 文件夹内存放了一些经过二次加工的函数，用于处理一些稍微复杂的情况。
 
 ## 使用说明
 

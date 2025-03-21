@@ -1,5 +1,5 @@
 import * as _ from "soil-ts";
-import getBoundsByLayers from "../../utils/getBoundsByLayers";
+import { getBoundsByLayers } from "../../utils";
 
 _.setUndoGroup("Resize Comp to Selected Layers", () => {
     // 初始化
@@ -25,11 +25,11 @@ _.setUndoGroup("Resize Comp to Selected Layers", () => {
 
     // 添加空物体，重新设定大小
     const nullLayer = comp.layers.addNull();
-    const setNullLayerPosition = (position: Point): void => {
+    const setNullLayerPosition = (position: TwoDPoint): void => {
         _.setPropertyValue(nullLayer, ["ADBE Transform Group", "ADBE Position"], position);
     }
 
-    setNullLayerPosition([newBounds[0], newBounds[1]] as Point);
+    setNullLayerPosition([newBounds[0], newBounds[1]]);
 
     comp.width = Math.ceil(newBounds[2] - newBounds[0]);
     comp.height = Math.ceil(newBounds[3] - newBounds[1]);
@@ -40,7 +40,7 @@ _.setUndoGroup("Resize Comp to Selected Layers", () => {
     });
 
     // 还原空物体位置并删除
-    setNullLayerPosition([0, 0] as Point);
+    setNullLayerPosition([0, 0]);
     nullLayer.source.remove();
 
     // 还原原始父级和锁定状态

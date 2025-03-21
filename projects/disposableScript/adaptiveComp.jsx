@@ -4,7 +4,7 @@
 
 // 脚本作者: loneprison (qq: 769049918)
 // Github: https://github.com/loneprison/MyAEScript
-// - 2025/3/21 13:19:38
+// - 2025/3/21 14:00:42
 
 (function() {
     var objectProto = Object.prototype;
@@ -338,7 +338,7 @@
         var newMinX = newBounds[0], newMinY = newBounds[1], newMaxX = newBounds[2], newMaxY = newBounds[3];
         return [ Math.min(currMinX, newMinX), Math.min(currMinY, newMinY), Math.max(currMaxX, newMaxX), Math.max(currMaxY, newMaxY) ];
     }
-    function getBoundsForLayer(layer) {
+    function getBoundsByLayer(layer) {
         if (!isAVLayer(layer)) {
             return [ 0, 0, 0, 0 ];
         }
@@ -359,6 +359,9 @@
         return reduce(boundsList, function(currentBounds, newBounds) {
             return mergeTwoBounds(currentBounds, newBounds);
         }, [ Infinity, Infinity, -Infinity, -Infinity ]);
+    }
+    function getBoundsByLayers(layers) {
+        return mergeBounds(map(layers, getBoundsByLayer));
     }
     setUndoGroup("Resize Comp to Selected Layers", function() {
         var comp = getActiveComp();
@@ -381,7 +384,7 @@
             });
             return state;
         });
-        var newBounds = mergeBounds(map(selectedLayers, getBoundsForLayer));
+        var newBounds = getBoundsByLayers(selectedLayers);
         var nullLayer = comp.layers.addNull();
         var setNullLayerPosition = function(position) {
             setPropertyValue(nullLayer, [ "ADBE Transform Group", "ADBE Position" ], position);

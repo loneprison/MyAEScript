@@ -8,6 +8,8 @@ export { default as duplicateLayers } from './duplicateLayers';
 
 export { default as getBlendingModeByName } from './getBlendingModeByName';
 
+export { default as getBoundsByLayers } from './getBoundsByLayers';
+
 export { default as getTextDocumentValue } from './getTextDocumentValue';
 
 export { default as getTrackMatteTypeByName } from './getTrackMatteTypeByName';

@@ -424,3 +424,16 @@ type canSetTextDocumentData = {
     tracking?: number
     boxTextSize?: [number, number]
 }
+
+
+
+/**
+ * 表示矩形的边界，使用四个数字的元组表示。
+ * 
+ * @typeParam [number, number, number, number] - 元组包含以下内容：
+ * - 矩形左边的 x 坐标。
+ * - 矩形顶部的 y 坐标。
+ * - 矩形右边的 x 坐标。
+ * - 矩形底部的 y 坐标。
+ */
+type RectBounds = [number, number, number, number];
