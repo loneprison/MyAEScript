@@ -7,7 +7,7 @@
  * @param {TrackMatteTypeString} name 遮罩类型的中文名称。
  * @returns {TrackMatteType} 对应的 `TrackMatteType` 枚举值。
  * @since 0.1.0
- * @category Library
+ * @category utils
  * @example
  *
  * ```ts

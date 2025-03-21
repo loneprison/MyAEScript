@@ -8,7 +8,7 @@
  * @param {string} content 要复制的文本内容。
  * @returns {void} 无返回值。
  * @since 0.1.0
- * @category Library
+ * @category utils
  * @example
  *
  * ```ts

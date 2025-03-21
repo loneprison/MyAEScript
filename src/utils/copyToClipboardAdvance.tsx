@@ -6,6 +6,9 @@
  *
  * @param {string} text - 要复制到剪贴板的文本。
  * @returns {void}
+ * @since 0.1.0
+ * @category utils
+ * @example
  */
 
 function copyToClipboardAdvance(text) {

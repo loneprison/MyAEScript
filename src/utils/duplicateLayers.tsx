@@ -9,7 +9,7 @@
  * @param {boolean} [includesSelf=true] 是否包括原始图层在返回的数组中，默认为 `true`。
  * @returns {Layer[]} 包含所有复制图层的数组。
  * @since 0.1.0
- * @category Library
+ * @category utils
  * @example
  *
  * ```ts

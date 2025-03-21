@@ -28,6 +28,8 @@ function baseSortObjectKeys<T extends Record<string, any>>(
  *
  * @param {Record<string, any>} object 要排序的对象
  * @returns {Record<string, any>} 排序后的对象
+ * @since 0.1.0
+ * @category utils
  * @example
  * const obj = { 'key10': 1, 'key2': 2, 'key1': 3 };
  * const sortedObj = sortObjectKeysByData(obj);

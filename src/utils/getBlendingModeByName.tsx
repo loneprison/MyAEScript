@@ -6,7 +6,7 @@
  * @param {BlendingModeString} name 混合模式的中文名称。
  * @returns {BlendingMode} 对应的 `BlendingMode` 枚举值。
  * @since 0.1.0
- * @category Library
+ * @category utils
  * @example
  *
  * ```ts

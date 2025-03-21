@@ -233,6 +233,7 @@ class PropertyParser {
  * @param {_PropertyClasses} rootProperty 目标根属性,不一定需要传属性,也可以传图层
  * @param {Array<string>} [readProperty] 读取的属性,默认为空,如果不传则读取所有属性
  * @returns {PropertyDataStructure} 包含根属性数据的对象。
+ * @category utils
  * @example
  *  if (_.isLayer(firstLayer)) {
  *     const dataObject = getRootPropertyData(firstLayer)

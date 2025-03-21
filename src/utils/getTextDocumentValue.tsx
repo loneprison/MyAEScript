@@ -1,21 +1,28 @@
-function getTextDocumentValue(value: TextDocument): canSetTextDocumentData {
+/**
+ * 获取源文本的可读/写数据
+ * 
+ * @param TextDocument 根属性
+ * @since 0.1.0
+ * @category utils
+ */
+function getTextDocumentValue(TextDocument: TextDocument): canSetTextDocumentData {
     return {
-        text: value.text,
-        applyFill: value.applyFill,
-        applyStroke: value.applyStroke,
+        text: TextDocument.text,
+        applyFill: TextDocument.applyFill,
+        applyStroke: TextDocument.applyStroke,
 
-        font: value.font,
-        fontSize: value.fontSize,
+        font: TextDocument.font,
+        fontSize: TextDocument.fontSize,
 
-        justification: value.justification,
-        leading: value.leading,
-        tracking: value.tracking,
+        justification: TextDocument.justification,
+        leading: TextDocument.leading,
+        tracking: TextDocument.tracking,
 
-        fillColor: value.applyFill ? value.fillColor : undefined,
-        strokeColor: value.applyStroke ? value.strokeColor : undefined,
-        strokeOverFill: value.applyStroke ? value.strokeOverFill : undefined,
-        strokeWidth: value.applyStroke ? value.strokeWidth : undefined,
-        boxTextSize: value.boxText ? value.boxTextSize : undefined
+        fillColor: TextDocument.applyFill ? TextDocument.fillColor : undefined,
+        strokeColor: TextDocument.applyStroke ? TextDocument.strokeColor : undefined,
+        strokeOverFill: TextDocument.applyStroke ? TextDocument.strokeOverFill : undefined,
+        strokeWidth: TextDocument.applyStroke ? TextDocument.strokeWidth : undefined,
+        boxTextSize: TextDocument.boxText ? TextDocument.boxTextSize : undefined
     }
 }
 

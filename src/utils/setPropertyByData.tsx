@@ -89,6 +89,8 @@ function setSelfProperty(property: _PropertyClasses, dataObject: PropertyMetadat
  * 
  * @param rootProperty 根属性
  * @param propertyData 数据结构
+ * @since 0.1.0
+ * @category utils
  * @example
  * const firstLayer = _.getFirstLayer();
  * const data = {
