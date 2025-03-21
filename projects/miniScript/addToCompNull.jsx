@@ -4,7 +4,7 @@
 
 // 脚本作者: loneprison (qq: 769049918)
 // Github: https://github.com/loneprison/MyAEScript
-// - 2025/1/11 03:44:24
+// - 2025/3/19 14:49:47
 
 (function() {
     var objectProto = Object.prototype;
@@ -275,19 +275,24 @@
             !isNil(keySelected) && property.setSelectedAtKey(keyIndex, keySelected);
         });
     }
+    function setUndoGroup(undoString, func) {
+        app.beginUndoGroup(undoString);
+        func();
+        app.endUndoGroup();
+    }
     function setPropertyValueByData(property, dataObject) {
         if (has(dataObject, "keyframe")) {
             setKeyframeValues(property, dataObject.keyframe);
         } else if (has(dataObject, "value")) {
             if (isObject(property.value)) {
                 var objectValue = dataObject.value;
-                var textValue_1 = property.value;
+                var objValue_1 = property.value;
                 forOwn(objectValue, function(value, key) {
                     if (value) {
-                        textValue_1[key] = value;
+                        objValue_1[key] = value;
                     }
                 });
-                property.setValue(textValue_1);
+                property.setValue(objValue_1);
             } else {
                 property.setValue(dataObject.value);
             }
@@ -356,53 +361,55 @@
             }
         });
     }
-    var _a;
-    var activeComp = getActiveComp();
-    var fristLayer = getFirstSelectedLayer();
-    var layerName = "目标点图层";
-    if (activeComp) {
-        if (!activeComp.activeCamera) {
-            alert("请确保合成内至少有一个摄像机/三维图层\n在创建之前将会遇到表达式报错");
-        }
-        var newNullLayer = activeComp.layers.addNull();
-        setPropertyByData(newNullLayer, {
-            "S0000 selfProperty": {
-                "name": "Null-toComp"
-            },
-            "G0005 ADBE Effect Parade": {
-                "G0001 ADBE Layer Control": {
-                    "S0000 selfProperty": {
-                        "enabled": true,
-                        "name": layerName
-                    }
-                }
-            },
-            "G0006 ADBE Transform Group": {
-                "P0001 ADBE Anchor Point": {
-                    value: [ newNullLayer.width / 2, newNullLayer.height / 2 ]
-                },
-                "P0002 ADBE Position": {
-                    "expression": 'effect("目标点图层")(1).toComp(effect("目标点图层")(1).transform.anchorPoint)'
-                },
-                "P0006 ADBE Scale": {
-                    "expression": 'var _layer = effect("目标点图层")(1);\r\n\r\nvar P1 = thisComp.activeCamera.toWorld(transform.anchorPoint);\r\nvar P2 = _layer.toWorld(_layer.transform.anchorPoint);\r\n\r\nvar baseDistance = thisComp.activeCamera.cameraOption.focusDistance;\r\nvar cameraForward = normalize(thisComp.activeCamera.toWorldVec([0, 0, 1]));\r\n\r\nvar perpendicularDistance = length(P2 - P1 - dot(P2 - P1, cameraForward) * cameraForward);\r\nvar distance = length(P2 - P1);\r\nvar parallelDistance = Math.sqrt(distance * distance - perpendicularDistance * perpendicularDistance);\r\n\r\nvar _scale = baseDistance / parallelDistance * 100;\r\n[_scale, _scale];\r\n'
-                }
+    setUndoGroup("addToCompNull", function() {
+        var _a;
+        var activeComp = getActiveComp();
+        var firstLayer = getFirstSelectedLayer();
+        var layerName = "目标点图层";
+        if (activeComp) {
+            if (!activeComp.activeCamera) {
+                alert("请确保合成内至少有一个摄像机/三维图层\n在创建之前将会遇到表达式报错");
             }
-        });
-        if (fristLayer) {
-            newNullLayer.moveBefore(fristLayer);
+            var newNullLayer = activeComp.layers.addNull();
             setPropertyByData(newNullLayer, {
                 "S0000 selfProperty": {
-                    "name": "".concat(fristLayer.name, "-toComp")
+                    "name": "Null-toComp"
                 },
-                "G0005 ADBE Effect Parade": (_a = {}, _a["G0001 ".concat(layerName)] = {
-                    "P0001 ADBE Layer Control-0001": {
-                        value: fristLayer.index
+                "G0005 ADBE Effect Parade": {
+                    "G0001 ADBE Layer Control": {
+                        "S0000 selfProperty": {
+                            "enabled": true,
+                            "name": layerName
+                        }
                     }
-                }, _a)
+                },
+                "G0006 ADBE Transform Group": {
+                    "P0001 ADBE Anchor Point": {
+                        value: [ newNullLayer.width / 2, newNullLayer.height / 2 ]
+                    },
+                    "P0002 ADBE Position": {
+                        "expression": 'effect("目标点图层")(1).toComp(effect("目标点图层")(1).transform.anchorPoint)'
+                    },
+                    "P0006 ADBE Scale": {
+                        "expression": 'var _layer = effect("目标点图层")(1);\r\n\r\nvar P1 = thisComp.activeCamera.toWorld(transform.anchorPoint);\r\nvar P2 = _layer.toWorld(_layer.transform.anchorPoint);\r\n\r\nvar zoom = thisComp.activeCamera.cameraOption.zoom;\r\nvar cameraForward = normalize(thisComp.activeCamera.toWorldVec([0, 0, 1]));\r\n\r\nvar displacement = P2 - P1;\r\nvar parallelDistance = dot(displacement, cameraForward);\r\n\r\nif (parallelDistance <= 0) {\r\n    [0, 0];\r\n} else {\r\n    var perpendicularDistance = length(displacement - parallelDistance * cameraForward);\r\n    var _scale = zoom / parallelDistance * 100;\r\n\r\n    [_scale, _scale];\r\n}\r\n'
+                    }
+                }
             });
+            if (firstLayer) {
+                newNullLayer.moveBefore(firstLayer);
+                setPropertyByData(newNullLayer, {
+                    "S0000 selfProperty": {
+                        "name": "".concat(firstLayer.name, "-toComp")
+                    },
+                    "G0005 ADBE Effect Parade": (_a = {}, _a["G0001 ".concat(layerName)] = {
+                        "P0001 ADBE Layer Control-0001": {
+                            value: firstLayer.index
+                        }
+                    }, _a)
+                });
+            }
+        } else {
+            alert("请先选择一个图层");
         }
-    } else {
-        alert("请先选择一个图层");
-    }
+    });
 }).call(this);

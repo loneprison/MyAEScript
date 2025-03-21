@@ -4,7 +4,7 @@
 
 // 脚本作者: loneprison (qq: 769049918)
 // Github: https://github.com/loneprison/MyAEScript
-// - 2024/12/21 22:27:24
+// - 2025/3/19 14:48:24
 
 (function() {
     var objectProto = Object.prototype;
@@ -203,7 +203,7 @@
     function sortLayersByName(layerArray, order) {
         return layerArray.sort(function(a, b) {
             var getSortKey = function(name) {
-                var numberPart = name.match(/\d+$/);
+                var numberPart = /\d+$/.exec(name);
                 var textPart = name.replace(/\d+$/, "");
                 return {
                     number: numberPart ? parseInt(numberPart[0], 10) : NaN,
@@ -275,12 +275,11 @@
             }
         }
     }
-    function main() {
+    setUndoGroup("SequenceLayers", function() {
         var sortMode = getStr("index");
         var selectMode = getStr("current");
         if (isWhatStr(sortMode, "index", "name") && isWhatStr(selectMode, "current", "internal")) {
             SequenceLayers(sortMode, selectMode);
         }
-    }
-    setUndoGroup("SequenceLayers", main);
+    });
 }).call(this);

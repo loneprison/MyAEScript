@@ -122,7 +122,7 @@ if (_.isRasterLayer(firstLayer)) {
                     "name": "End Point",
                     "value": [
                         firstLayer.width / 2,
-                        firstLayer.height/2,
+                        firstLayer.height / 2,
                     ]
                 },
                 "P0006 PSOFT GRADIENT-0006": {
@@ -141,6 +141,7 @@ if (_.isRasterLayer(firstLayer)) {
             }
         }
     }
-
-    setPropertyByData(firstLayer, data)
+    _.setUndoGroup("newPara", () => {
+        setPropertyByData(firstLayer, data)
+    })
 }

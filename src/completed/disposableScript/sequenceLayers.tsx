@@ -1,5 +1,5 @@
 import * as _ from 'soil-ts';
-import {sortLayersByIndex,sortLayersByName} from '../../utils/index';
+import { sortLayersByIndex, sortLayersByName } from '../../utils/index';
 
 
 // 一次性脚本，即为了某个工作流程开发的【临时的一次性的脚本】，因此不具备通用性和严谨性
@@ -13,7 +13,7 @@ const isWhatStr = <T extends string>(str: string, ...args: T[]): str is T => {
 };
 
 // 判断是否为全是合成图层
-const isAllCompLayer = (layerArray: Layer[]): layerArray is AVLayer[] => 
+const isAllCompLayer = (layerArray: Layer[]): layerArray is AVLayer[] =>
     !_.some(layerArray, layer => !_.isCompLayer(layer));
 
 // 通用的排序和时间设置逻辑
@@ -78,13 +78,12 @@ function SequenceLayers(sortMode: "index" | "name", selectMode: "current" | "int
     }
 }
 
-function main() {
+
+_.setUndoGroup("SequenceLayers", () => {
     const sortMode = getStr("index");
     const selectMode = getStr("current");
 
     if (isWhatStr(sortMode, "index", "name") && isWhatStr(selectMode, "current", "internal")) {
         SequenceLayers(sortMode, selectMode);
     }
-}
-
-_.setUndoGroup("SequenceLayers", main);
+});

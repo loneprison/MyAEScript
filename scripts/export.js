@@ -2,8 +2,21 @@ const fs = require('fs');
 const path = require('path');
 
 // 文件夹路径
-const folderPath = 'utils'; // 请根据实际情况修改路径
+const folderPath = 'src\\utils'; // 确保这是一个实际存在的文件夹路径
 const outputFileName = 'index.ts'; // 输出文件名
+
+// 检查路径是否为目录
+function ensureDirectoryExists(dir) {
+  console.log(`检查路径: ${dir}`); // 调试日志
+  if (!fs.existsSync(dir)) {
+    throw new Error(`路径不存在: ${dir}`);
+  }
+  const stats = fs.statSync(dir);
+  console.log(`路径类型: ${stats.isDirectory() ? '目录' : '文件'}`); // 调试日志
+  if (!stats.isDirectory()) {
+    throw new Error(`路径不是一个目录: ${dir}`);
+  }
+}
 
 // 分析文件内容中的导出信息
 function analyzeExports(filePath) {
@@ -34,8 +47,9 @@ function analyzeExports(filePath) {
 
 // 获取所有 .tsx 文件
 function getTSXFiles(dir) {
+  console.log(`读取目录内容: ${dir}`); // 调试日志
   return fs.readdirSync(dir)
-    .filter(file => file.endsWith('.tsx') && file !== outputFileName)
+    .filter(file => file.endsWith('.tsx') && file !== outputFileName) // 确保排除 index.ts
     .map(file => ({
       name: path.parse(file).name,
       path: path.join(dir, file),
@@ -63,6 +77,14 @@ function generateExports(files) {
 
 // 写入 index.ts 文件
 function createIndexFile(dir, fileName) {
+  ensureDirectoryExists(dir); // 添加路径检查
+
+  const filePath = path.join(dir, fileName);
+  if (fs.existsSync(filePath)) {
+    console.log(`删除旧文件: ${filePath}`); // 调试日志
+    fs.unlinkSync(filePath); // 删除旧的 index.ts 文件
+  }
+
   const files = getTSXFiles(dir);
   if (files.length === 0) {
     console.log('没有找到 .tsx 文件。');
@@ -70,8 +92,8 @@ function createIndexFile(dir, fileName) {
   }
 
   const content = generateExports(files);
-  const filePath = path.join(dir, fileName);
 
+  console.log(`生成文件路径: ${filePath}`); // 调试日志
   fs.writeFileSync(filePath, content, 'utf8');
   console.log(`已生成 ${filePath}`);
 }

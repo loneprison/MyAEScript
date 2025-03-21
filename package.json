@@ -2,7 +2,8 @@
     "scripts": {
         "build": "rollup -c",
         "watch": "node scripts/watch.js",
-        "clean": "node scripts/clean.js"
+        "clean": "node scripts/clean.js",
+        "export": "node scripts/export.js"
     },
     "devDependencies": {
         "soil-ts": "*",

@@ -4,7 +4,7 @@
 
 // 脚本作者: loneprison (qq: 769049918)
 // Github: https://github.com/loneprison/MyAEScript
-// - 2024/12/21 22:25:29
+// - 2025/3/19 14:50:46
 
 (function() {
     var objectProto = Object.prototype;
@@ -18,6 +18,13 @@
     var rePropName = /[^.[\]]+|\[(?:([^"'][^[]*)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
     function has(object, key) {
         return object != null && hasOwnProperty.call(object, key);
+    }
+    function isObject(value) {
+        if (value == null) {
+            return false;
+        }
+        var type = typeof value;
+        return type === "object" || type === "function";
     }
     function getTag(value) {
         if (value == null) {
@@ -93,6 +100,38 @@
         var result = object == null ? undefined : baseGet(object, path);
         return result === undefined ? defaultValue : result;
     }
+    function map(array, iteratee) {
+        var index = -1;
+        var length = array == null ? 0 : array.length;
+        var result = new Array(length);
+        while (++index < length) {
+            result[index] = iteratee(array[index], index, array);
+        }
+        return result;
+    }
+    function filter(array, predicate) {
+        var index = -1;
+        var resIndex = 0;
+        var length = array == null ? 0 : array.length;
+        var result = [];
+        while (++index < length) {
+            var value = array[index];
+            if (predicate(value, index, array)) {
+                result[resIndex++] = value;
+            }
+        }
+        return result;
+    }
+    function forEach(array, iteratee) {
+        var index = -1;
+        var length = array.length;
+        while (++index < length) {
+            if (iteratee(array[index], index, array) === false) {
+                break;
+            }
+        }
+        return array;
+    }
     function forOwn(object, iteratee) {
         for (var key in object) {
             if (has(object, key)) {
@@ -102,6 +141,9 @@
             }
         }
         return object;
+    }
+    function isNil(value) {
+        return value == null;
     }
     function startsWith(string, target, position) {
         var length = string.length;
@@ -119,6 +161,8 @@
             return value != null && value instanceof nativeObject;
         };
     }
+    var IS_KEY_LABEL_EXISTS = parseFloat(app.version) > 22.5;
+    var PROPERTY_INTERPOLATION_TYPE = [ 6612, 6613, 6614 ];
     var isCompItem = createIsNativeType(CompItem);
     function isLayer(value) {
         return has(value, "containingComp") && isCompItem(value.containingComp) && value.parentProperty === null && value.propertyDepth === 0;
@@ -138,6 +182,18 @@
         }
         return index && index === length ? nested : undefined;
     }
+    function getValidInterpolationTypes(property) {
+        return filter(PROPERTY_INTERPOLATION_TYPE, function(enumNumber) {
+            return property.isInterpolationTypeValid(enumNumber);
+        });
+    }
+    function isHoldInterpolationTypeOnly(property) {
+        var validInterpolationTypes = getValidInterpolationTypes(property);
+        return validInterpolationTypes.length === 1 && validInterpolationTypes[0] === KeyframeInterpolationType.HOLD;
+    }
+    function canSetKeyframeVelocity(property) {
+        return !isHoldInterpolationTypeOnly(property);
+    }
     var isProperty = createIsNativeType(Property);
     function createGetAppProperty(path) {
         return function() {
@@ -151,18 +207,90 @@
     function isRasterLayer(layer) {
         return isAVLayer(layer) || isShapeLayer(layer) || isTextLayer(layer);
     }
-    var isTextDocument = createIsNativeType(TextDocument);
+    function createIsAVLayer(callback) {
+        return function(value) {
+            return isAVLayer(value) && callback(value);
+        };
+    }
+    function isColorProperty(property) {
+        return isProperty(property) && property.propertyValueType === PropertyValueType.COLOR;
+    }
+    var isCompLayer = createIsAVLayer(function(layer) {
+        return isCompItem(layer.source);
+    });
+    var isSolidSource = createIsNativeType(SolidSource);
+    function isSolidLayer(value) {
+        return isAVLayer(value) && isSolidSource(value.source.mainSource);
+    }
+    function mapTemporalEaseValueToClasses(keyTemporalEaseValue) {
+        return map(keyTemporalEaseValue, function(keyframeEase) {
+            var speed = keyframeEase.speed;
+            var influence = keyframeEase.influence;
+            return new KeyframeEase(speed, influence === 0 ? 0.1 : influence);
+        });
+    }
+    function setKeyframeValues(property, keyframeValues) {
+        if (keyframeValues.length === 0) {
+            return;
+        }
+        forEach(keyframeValues, function(keyframe) {
+            var keyTime = keyframe.keyTime;
+            var keyValue = keyframe.keyValue;
+            property.setValueAtTime(keyTime, keyValue);
+        });
+        var isSpatialValue = property.isSpatial && !isColorProperty(property);
+        var canSetVelocity = canSetKeyframeVelocity(property);
+        forEach(keyframeValues, function(keyframe) {
+            var keyIndex = property.nearestKeyIndex(keyframe.keyTime);
+            var keyInSpatialTangent = keyframe.keyInSpatialTangent;
+            var keyOutSpatialTangent = keyframe.keyOutSpatialTangent;
+            var keySpatialAutoBezier = keyframe.keySpatialAutoBezier;
+            var keySpatialContinuous = keyframe.keySpatialContinuous;
+            var keyInTemporalEase = keyframe.keyInTemporalEase;
+            var keyOutTemporalEase = keyframe.keyOutTemporalEase;
+            var keyTemporalContinuous = keyframe.keyTemporalContinuous;
+            var keyTemporalAutoBezier = keyframe.keyTemporalAutoBezier;
+            var keyInInterpolationType = keyframe.keyInInterpolationType;
+            var keyOutInterpolationType = keyframe.keyOutInterpolationType;
+            var keyRoving = keyframe.keyRoving;
+            var keyLabel = keyframe.keyLabel;
+            var keySelected = keyframe.keySelected;
+            if (isSpatialValue) {
+                !isNil(keyInSpatialTangent) && property.setSpatialTangentsAtKey(keyIndex, keyInSpatialTangent, keyOutSpatialTangent);
+                !isNil(keySpatialAutoBezier) && property.setSpatialAutoBezierAtKey(keyIndex, keySpatialAutoBezier);
+                !isNil(keySpatialContinuous) && property.setSpatialContinuousAtKey(keyIndex, keySpatialContinuous);
+                !isNil(keyRoving) && property.setRovingAtKey(keyIndex, keyRoving);
+            }
+            if (canSetVelocity) {
+                !isNil(keyInTemporalEase) && property.setTemporalEaseAtKey(keyIndex, mapTemporalEaseValueToClasses(keyInTemporalEase), !isNil(keyOutTemporalEase) ? mapTemporalEaseValueToClasses(keyOutTemporalEase) : void 0);
+            }
+            !isNil(keyTemporalContinuous) && property.setTemporalContinuousAtKey(keyIndex, keyTemporalContinuous);
+            !isNil(keyTemporalAutoBezier) && property.setTemporalAutoBezierAtKey(keyIndex, keyTemporalAutoBezier);
+            !isNil(keyInInterpolationType) && property.setInterpolationTypeAtKey(keyIndex, keyInInterpolationType, !isNil(keyOutInterpolationType) ? keyOutInterpolationType : void 0);
+            if (IS_KEY_LABEL_EXISTS) {
+                !isNil(keyLabel) && property.setLabelAtKey(keyIndex, keyLabel);
+            }
+            !isNil(keySelected) && property.setSelectedAtKey(keyIndex, keySelected);
+        });
+    }
+    function setUndoGroup(undoString, func) {
+        app.beginUndoGroup(undoString);
+        func();
+        app.endUndoGroup();
+    }
     function setPropertyValueByData(property, dataObject) {
-        if (has(dataObject, "value")) {
-            if (isTextDocument(property.value)) {
-                var textObject = dataObject.value;
-                var textValue_1 = property.value;
-                forOwn(textObject, function(value, key) {
+        if (has(dataObject, "keyframe")) {
+            setKeyframeValues(property, dataObject.keyframe);
+        } else if (has(dataObject, "value")) {
+            if (isObject(property.value)) {
+                var objectValue = dataObject.value;
+                var objValue_1 = property.value;
+                forOwn(objectValue, function(value, key) {
                     if (value) {
-                        textValue_1[key] = value;
+                        objValue_1[key] = value;
                     }
                 });
-                property.setValue(textValue_1);
+                property.setValue(objValue_1);
             } else {
                 property.setValue(dataObject.value);
             }
@@ -172,11 +300,42 @@
         }
     }
     function setSelfProperty(property, dataObject) {
-        if (has(dataObject, "enabled")) {
-            property.enabled = dataObject.enabled;
-        }
-        if (has(dataObject, "name")) {
-            property.name = dataObject.name;
+        var setSelf = function(property_) {
+            forOwn(dataObject, function(value, key) {
+                if (has(property_, key)) {
+                    property_[key] = value;
+                }
+            });
+        };
+        var setAndDelete = function(property_, key) {
+            if (has(dataObject, key)) {
+                property_[key] = dataObject[key];
+                delete dataObject[key];
+            }
+        };
+        if (isLayer(property)) {
+            var layer_1 = property;
+            var layerData = dataObject;
+            var locked = has(layerData, "locked") ? layerData.locked : layer_1.locked;
+            delete layerData.locked;
+            layer_1.locked = false;
+            forEach([ "startTime", "inPoint", "outPoint" ], function(key) {
+                setAndDelete(layer_1, key);
+            });
+            if (isSolidLayer(layer_1) || isCompLayer(layer_1)) {
+                forEach([ "height", "width" ], function(key) {
+                    setAndDelete(layer_1.source, key);
+                });
+            }
+            if (isAVLayer(layer_1) && layer_1.canSetTimeRemapEnabled) {
+                setAndDelete(layer_1, "timeRemapEnabled");
+            } else {
+                delete layerData.timeRemapEnabled;
+            }
+            setSelf(layer_1);
+            layer_1.locked = locked;
+        } else {
+            setSelf(property);
         }
     }
     function setPropertyByData(rootProperty, propertyData) {
@@ -202,7 +361,7 @@
     }
     var firstLayer = getFirstSelectedLayer();
     if (isRasterLayer(firstLayer)) {
-        var data = {
+        var data_1 = {
             "G0005 ADBE Effect Parade": {
                 "G0001 PSOFT GRADIENT": {
                     "S0000 selfProperty": {
@@ -303,6 +462,8 @@
                 }
             }
         };
-        setPropertyByData(firstLayer, data);
+        setUndoGroup("newPara", function() {
+            setPropertyByData(firstLayer, data_1);
+        });
     }
 }).call(this);
