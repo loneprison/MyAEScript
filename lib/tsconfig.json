@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "none",
+    "noLib": true,
+    "types": [],
+    "rootDir": "./" 
+  },
+  "include": ["./**/*.ts","./**/*.tsx"], 
+  "exclude": ["node_modules"] 
+}

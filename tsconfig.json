@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "jsx": "preserve",
+        "noLib": true,
+        "types": ["types-for-adobe/AfterEffects/23.0"],
+    },
+    "include": ["./src/**/*.tsx","./src/**/*.ts"]
+}

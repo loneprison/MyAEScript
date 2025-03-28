@@ -1,0 +1,22 @@
+{
+  "cSpell.words": [
+    "Extrsn",
+    "Envir",
+    "LUMA",
+    "SILHOUETE",
+    "LUMINESCENT_PREMUL",
+    "loneprison",
+    "Bezier",
+    "outro",
+    "PSOFT",
+    "edittext",
+    "osascript",
+    "dockable",
+    "resizeable",
+    "tabbedpanel",
+    "Atarabi"
+  ],
+  "files.associations": {
+        "*.json": "jsonc"
+    }
+}
