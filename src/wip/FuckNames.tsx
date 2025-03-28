@@ -21,7 +21,7 @@ _.setUndoGroup("Fuck Name", () => {
 });
 
 // 生成随机字符串
-function generateRandomString(length) {
+function generateRandomString(length:number) {
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     var result = "";
     for (var i = 0; i < length; i++) {

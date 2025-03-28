@@ -1,53 +1,39 @@
 import * as _ from 'soil-ts';
-import { setPropertyByData } from '../../utils';
+
+// 烂代码......
+// 一次性脚本，就不改了
 
 function getItemFromPath(pathArray: string[]): _ItemClasses | undefined {
     const project = app.project;
-    let currentItem: _ItemClasses;  // 初始为 project，接着会逐层查找
+    if (pathArray.length === 0) return void 0; // 提前返回空路径情况
 
-    // 遍历路径数组
-    for (let i = 0; i < pathArray.length; i++) {
-        const folderName = pathArray[i];
-        if (i == 0) {
-            currentItem = _.findItem(project, (item) => item.name === folderName);
-        } else
-            if (_.isFolderItem(currentItem)) {
-                if (i == pathArray.length - 1) {
-                    return _.findItem(currentItem, (item) => item.name === folderName);
-                }
+    // 获取根文件夹
+    let currentItem: _ItemClasses | undefined = _.findItem(project, (item) => item.name === pathArray[0]);
+    if (!currentItem) return void 0; // 如果根目录找不到，直接返回
 
-                currentItem = _.findItem(currentItem, (item) => item.name === folderName && _.isFolderItem(item));
-            }
+    // 遍历剩余路径
+    for (let i = 1; i < pathArray.length; i++) {
+        if (!_.isFolderItem(currentItem)) return void 0; // 不是文件夹直接返回
+
+        // 查找子项
+        currentItem = _.findItem<FolderItem>(currentItem, (item) => item.name === pathArray[i]);
+        if (!currentItem) return void 0; // 如果找不到直接返回
     }
 
-
-    // 如果找不到该文件夹，返回 null
-    if (!_.isFolderItem(currentItem)) {
-        return undefined;
-    }
-    return currentItem
+    return currentItem;
 }
 
 
-
-function setTest(str: string): PropertyDataStructure {
-    return {
-        "G0002 ADBE Text Properties": {
-            "P0001 ADBE Text Document": {
-                "value": {
-                    "text": str,
-                }
-            },
-        },
-
-    }
+function setText(layer: TextLayer, string: string) {
+    return _.setPropertyValue(layer, ["ADBE Text Properties", "ADBE Text Document"], string)
 }
 
-function _readJSON() {
+function _readJSON(): AnyObject {
     const path = app.project.file;
+    if (!path) return {}
     _.isFolder(path) && app.project.setDefaultImportFolder(path);
 
-    const file = new File(app.project.file.path);
+    const file = new File(path.path);
     let JSONFile = file.openDlg("Open a file", "Acceptable Files:*.json") as File;
     JSONFile.open("r");
     const readJSON = JSONFile.read();
@@ -57,9 +43,15 @@ function _readJSON() {
 
 
 _.setUndoGroup("test", () => {
-    const readJSON = _readJSON();
+    const readJSON: AnyObject = _readJSON();
 
-    _.forOwn(readJSON, (value, key) => {
+    interface SongData {
+        song_name?: string;
+        id?: string;
+        singer?: string;
+        coop?: string;
+    }
+    _.forOwn(readJSON, (value: AnyObject, key) => {
         let getItem = getItemFromPath(["base", "sub_base"])
         if (!_.isCompItem(getItem)) {
             $.writeln("错误,没有找到Base合成\n" + key)
@@ -74,24 +66,26 @@ _.setUndoGroup("test", () => {
             const mainFolder = getItemFromPath(["sub"]) as FolderItem
 
             newItem.parentFolder = mainFolder;
-            const layers: { layerIndex: number, text: string }[] = [];
-            _.forEach(value, (item, index) => {
+            const layers: { layerIndex: number, text: string|undefined }[] = [];
+            _.forOwn(value, (item: SongData, index) => {
+                if (!item) return;
                 if (_.has(item, 'song_name')) {
-                    layers.push({ layerIndex: 1 + index * 4, text: item.song_name as string });
+                    layers.push({ layerIndex: 1 + parseInt(index) * 4, text: item.song_name });
                 }
                 if (_.has(item, 'id')) {
-                    layers.push({ layerIndex: 2 + index * 4, text: item.id as string });
+                    layers.push({ layerIndex: 2 + parseInt(index) * 4, text: item.id });
                 }
                 if (_.has(item, 'singer')) {
-                    layers.push({ layerIndex: 3 + index * 4, text: item.singer as string });
+                    layers.push({ layerIndex: 3 + parseInt(index) * 4, text: item.singer });
                 }
                 if (_.has(item, 'coop')) {
-                    layers.push({ layerIndex: 4 + index * 4, text: item.coop as string });
+                    layers.push({ layerIndex: 4 + parseInt(index) * 4, text: item.coop });
                 }
             })
 
             _.forEach(layers, ({ layerIndex, text }) => {
-                setPropertyByData(newItem.layer(layerIndex), setTest(text));
+                if(!text) text = " "
+                setText(newItem.layer(layerIndex) as TextLayer, text)
             });
 
             const replaceSourceInLayer = (layerIndex: number, sourceItem: AVItem | undefined, errorMessage: string) => {

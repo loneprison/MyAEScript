@@ -2,6 +2,7 @@
     "compilerOptions": {
         "jsx": "preserve",
         "noLib": true,
+        "strict": true,
         "types": ["types-for-adobe/AfterEffects/23.0"],
     },
     "include": ["./src/**/*.tsx","./src/**/*.ts"]

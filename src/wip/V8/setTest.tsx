@@ -2,7 +2,7 @@ import * as _ from 'soil-ts';
 
 function setPropertyValueByData(property: Property, dataObject: PropertyValueData) {
     // 设置表达式
-    if ('expression' in dataObject) {
+    if (_.has(dataObject, 'expression') && _.isString(dataObject.expression)) {
         property.expression = dataObject.expression;
     }
 }

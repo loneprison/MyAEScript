@@ -3,7 +3,7 @@ import { setPropertyByData } from '../../utils';
 
 function getItemFromPath(pathArray: string[]): _ItemClasses | undefined {
     const project = app.project;
-    let currentItem: _ItemClasses;  // 初始为 project，接着会逐层查找
+    let currentItem: _ItemClasses|undefined = void 0;  // 初始为 project，接着会逐层查找
 
     // 遍历路径数组
     for (let i = 0; i < pathArray.length; i++) {
@@ -23,7 +23,7 @@ function getItemFromPath(pathArray: string[]): _ItemClasses | undefined {
 
     // 如果找不到该文件夹，返回 null
     if (!_.isFolderItem(currentItem)) {
-        return undefined;
+        return void 0;
     }
     return currentItem
 }
@@ -46,9 +46,10 @@ function setTest(str: string): PropertyDataStructure {
 
 function _readJSON() {
     const path = app.project.file;
+    if (!path) return {}
     _.isFolder(path) && app.project.setDefaultImportFolder(path);
-
-    const file = new File(app.project.file.path);
+    
+    const file = new File(path.path);
     let JSONFile = file.openDlg("Open a file", "Acceptable Files:*.json") as File;
     JSONFile.open("r");
     const readJSON = JSONFile.read();

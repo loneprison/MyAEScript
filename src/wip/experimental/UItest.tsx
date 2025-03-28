@@ -23,10 +23,12 @@ let UISource = {
 let elements = _.tree.parse(UISource);
 
 let button1 = elements.getElementById<Button>("button1");
-button1.onClick = function () {
-    let group1 = elements.getElementById<Group>("group1");
-
-    group1.add("button", [0, 0, 50, 50], "按钮2");
-
-    elements.layout.layout(true);
-};
+if (button1) {
+    button1.onClick = function () {
+        let group1 = elements.getElementById<Group>("group1");
+        if (group1) {
+            group1.add("button", [0, 0, 50, 50], "按钮2");
+        }
+        elements.layout.layout(true);
+    };
+}

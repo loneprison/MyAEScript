@@ -14,6 +14,8 @@ const walk = (dir) => {
     const files = [];
     readdirSync(dir).forEach((f) => {
         const fullPath = resolve(dir, f);
+        // 如果是 src/utils 目录，跳过
+        if (fullPath.includes('src/utils')) return;
         const stats = statSync(fullPath);
         if (stats.isDirectory()) {
             files.push(...walk(fullPath));
@@ -162,10 +164,7 @@ const configs = recentFiles.map((file) => {
                         "// Soil作者:  Raymond Yan (raymondclr@foxmail.com / qq: 1107677019)",
                         "// Soil Github: https://github.com/RaymondClr/Soil",
                         "",
-                        "// at_script作者:  atarabi",
-                        "// at_script Github: https://github.com/atarabi/at_script",
-                        "",
-                        "//  脚本作者: loneprison (qq: 769049918)",
+                        "// 脚本作者: loneprison (qq: 769049918)",
                         "// Github: https://github.com/loneprison/MyAEScript",
                         `// - ${new Date().toLocaleString()}`,
                     ].join("\n"),

@@ -27,20 +27,21 @@ interface JSONData {
 
 function setPropertyData(layer: RasterLayer, data: JSONData): void {
     // 设置名称
-    if (_.has(data, "name")) layer.name = data.name;
+    if (_.has(data, "name") && data.name !== undefined) layer.name = data.name;
     // 设置注释
-    if (_.has(data, "comment")) layer.comment = data.comment;
+    if (_.has(data, "comment") && data.comment !== undefined) layer.comment = data.comment;
     // 设置是否启用
-    if (_.has(data, "enabled")) layer.enabled = data.enabled;
+    if (_.has(data, "enabled") && data.enabled !== undefined) layer.enabled = data.enabled;
     // 设置混合模式
-    if (_.has(data, "blendMode")) layer.blendingMode = data.blendMode;
+    if (_.has(data, "blendMode") && data.blendMode !== undefined) layer.blendingMode = data.blendMode;
     // 设置调整图层
-    if (_.has(data, "adjustmentLayer")) layer.adjustmentLayer = data.adjustmentLayer;
+    if (_.has(data, "adjustmentLayer") && data.adjustmentLayer !== undefined) layer.adjustmentLayer = data.adjustmentLayer;
     // 设置不透明度
-    if (_.has(data, "opacity")) layer.opacity.setValue(data.opacity);
+    if (_.has(data, "opacity") && data.opacity !== undefined) layer.opacity.setValue(data.opacity);
     // 设置效果
-    if (_.has(data, "effects")) setEffectsData(layer, data.effects);
+    if (_.has(data, "effects") && data.effects !== undefined) setEffectsData(layer, data.effects);
 }
+
 function setEffectsData(layer: RasterLayer, effectsData: EffectData): void {
     const effects = layer.effect;
     for (const key in effectsData) {

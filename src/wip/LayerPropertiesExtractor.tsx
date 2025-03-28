@@ -110,9 +110,9 @@ const groupStyle = {
     margins: 0,
 };
 
-const createCheckboxGroupedData = (dataArray:Array<string>,name:string) =>_.reduce(
+const createCheckboxGroupedData = (dataArray: Array<string>, name: string) => _.reduce(
     dataArray,
-    (result, value, key) => {
+    (result: AnyObject, value, key) => {
         const groupIndex = Math.floor(key / 4) + 1; // 每 4 个元素分组
         const groupKey = `group${groupIndex}`;
 

@@ -17,9 +17,10 @@ function setTest(str: string): PropertyDataStructure {
 
 function _readJSON(): AnyObject{
     const path = app.project.file;
+    if(!path) return {}
     _.isFolder(path) && app.project.setDefaultImportFolder(path);
 
-    const file = new File(app.project.file.path);
+    const file = new File(path.path);
     let JSONFile = file.openDlg("Open a file", "Acceptable Files:*.json") as File;
     JSONFile.open("r");
     const readJSON = JSONFile.read();
@@ -32,7 +33,7 @@ _.setUndoGroup("test", () => {
     const acItem = _.getActiveItem();
     if (_.isCompItem(acItem)) {
         const barrageBaseLayer = _.findLayer(acItem, (layer) => layer.name === "弹幕1");
-
+        if(!barrageBaseLayer) return
         const barrageLayers = duplicateLayers(barrageBaseLayer,data.barrageGroup.length,false);
         barrageBaseLayer.enabled = false;
         _.forEach(data.barrageGroup, (str:string, index) => {
@@ -41,6 +42,7 @@ _.setUndoGroup("test", () => {
         })
 
         const messageBaseLayer = _.findLayer(acItem, (layer) => layer.name === "留言1");
+        if(!messageBaseLayer) return
         const messageLayers = duplicateLayers(messageBaseLayer,data.messageGroup.length,false);
         messageBaseLayer.enabled = false;
         _.forEach(data.messageGroup, (str:string, index) => {

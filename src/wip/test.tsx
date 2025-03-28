@@ -37,8 +37,8 @@ const data = {
 
 
 const firstLayer = _.getFirstSelectedLayer();
-duplicateLayers(firstLayer,10,true)
-duplicateLayers(firstLayer,10,false)
-_.setUndoGroup("test",()=>{
-    setPropertyByData(firstLayer,data);
-})
+if (firstLayer) {
+    _.setUndoGroup("test", () => {
+        setPropertyByData(firstLayer, data);
+    })
+}
