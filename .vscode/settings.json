@@ -14,7 +14,8 @@
     "dockable",
     "resizeable",
     "tabbedpanel",
-    "Atarabi"
+    "Atarabi",
+    "statictext"
   ],
   "files.associations": {
         "*.json": "jsonc"
