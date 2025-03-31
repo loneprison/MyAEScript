@@ -1,23 +1,11 @@
 import * as _ from 'soil-ts';
 
-type VideoData = {
+type JSONRange = {
     [key: string]: {
-        song_name?: string,
-        file_name?: string,
-        code?: string,
-        song_type?: string,
-        lyric?: string,
-        lyric_type?: string,
-        pv_picture?: string,
-        pv_form?: string,
-        original_pv?: {
-            pv_color?: string,
-            pv_color_2?: string,
-            pv_structure?: string
-        }
+        min: number,
+        max: number,
     }
 }
-
 
 const textSizeHeight: number = 22;
 const buttonSizeHeight: number = 26;
@@ -27,6 +15,7 @@ const TextSizeArray_2: Array<number> = [0, 0, 32, textSizeHeight];
 const buttonSizeArray: Array<number> = [0, 0, 70, buttonSizeHeight];
 const dropdownSizeArray: Array<number> = [0, 0, 56, textSizeHeight];
 const dataBoxSizeArray: Array<number> = [0, 0, dataBoxWidth, textSizeHeight];
+const matchTypes: Array<string> = ["AC", "AF", "SC", "SF"]
 
 
 let UIExamples = {
@@ -70,14 +59,14 @@ let UIExamples = {
                 },
                 statictext1: [undefined, undefined, "读取文件"],
                 group1: {
-                    style:{
+                    style: {
                         alignment: ["fill", "fill"]
                     },
                     button1: ["readJSONButton", buttonSizeArray, "点击打开"],
                     statictext1: {
                         style: {
                             alignment: ["fill", "fill"]
-                        }, 
+                        },
                         param: ["readFileName", undefined, "未读取"]
                     }
                 }
@@ -87,10 +76,16 @@ let UIExamples = {
                     orientation: "row",
                     alignChildren: ["left", "center"],
                     spacing: 12,
-                    margins: 0
+                    margins: 0,
+                    alignment: ["fill", "fill"]
                 },
                 statictext1: [undefined, TextSizeArray_1, "数据范围"],
-                statictext2: ["dataRange", undefined, "AC*** - AC***"]
+                statictext2: {
+                    style: {
+                        alignment: ["fill", "fill"]
+                    },
+                    param: ["dataRange", undefined, "AC*** - AC***"]
+                }
             },
             group3: {
                 style: {
@@ -104,7 +99,7 @@ let UIExamples = {
                     style: {
                         selection: 0
                     },
-                    param: ["dropName1", dropdownSizeArray, ["AC", "AF", "SC", "SF"]]
+                    param: ["dropName1", dropdownSizeArray, matchTypes]
                 },
                 edittext1: [undefined, TextSizeArray_2, "01"],
                 edittext2: [undefined, TextSizeArray_2, "09"]
@@ -203,7 +198,7 @@ let UIExamples = {
     },
 
     edittext1: {
-        param: ["debugText", [0, 0, 300, 200], "调试信息预留", {
+        param: ["debugText", [0, 0, 300, 200], "debug信息...", {
             multiline: true
         }],
         style: {
@@ -221,35 +216,78 @@ let debugText = elements.getElementById<EditText>("debugText");
 let readFileNameText = elements.getElementById<StaticText>("readFileName");
 let dataRangeText = elements.getElementById<StaticText>("dataRange");
 
-let JSONdata = {}
+let JSONdata: AnyObject = {}
 
+
+// 需要用监听器重写UI
 readJSONButton && (readJSONButton.onClick = (): void => {
     const path = app.project.file;
     if (!path) {
-        logDebugText("请先保存项目再进行操作")
+        logDebugText_Add("请先保存项目再进行操作")
         JSONdata = {}
         return
     }
     JSONdata = readJSON(path)
+    refreshDataRangeText()
 })
 
-function logDebugText(text: string): void {
+// 刷新并写入新的Debug信息
+function logDebugText_Refresh(text: string): void {
     debugText && (debugText.text = text)
     refreshUI()
 }
 
+// 刷新并增加Debug信息
+function logDebugText_Add(text: string): void {
+    debugText && (debugText.text = `${debugText.text}\n${text}`)
+    refreshUI()
+}
+
+// 刷新第一排文件名信息
 function refreshReadFileNameText(name: string): void {
     readFileNameText && (readFileNameText.text = name)
+    logDebugText_Add(`成功读取文件: ${name}`)
     refreshUI()
 }
 
-function refreshDataRangeText(): void{
-    let range:string = ""
-    // 这里的计算后面再想
-    dataRangeText&&(dataRangeText.text = range)
+// 刷新第二排JSON范围信息
+function refreshDataRangeText(): void {
+    const result: JSONRange = getMinMaxByCategory(JSONdata, matchTypes);
+    let range = _.mapObject(result, (value, key) => {
+        return `${key} : ${value.min} - ${value.max}`
+    })
+
+    dataRangeText && (dataRangeText.text = range.join(" | "))
+    logDebugText_Add(range.join("\n"))
     refreshUI()
 }
 
+// 辅助函数: 获取JSON的具体范围
+function getMinMaxByCategory(JSONdata: AnyObject, matchTypes: string[]): JSONRange {
+    const result: JSONRange = {};
+    const regex = /^([A-Z]+)(\d+)$/;
+
+    _.each(_.keys(JSONdata), (key) => {
+        const match = regex.exec(key);
+        if (match) {
+            const type = match[1];
+            const num = parseInt(match[2], 10);
+
+            if (_.indexOf(matchTypes, type) !== -1) {
+                if (!result[type]) {
+                    result[type] = { min: num, max: num };
+                } else {
+                    result[type].min = Math.min(result[type].min, num);
+                    result[type].max = Math.max(result[type].max, num);
+                }
+            }
+        }
+    });
+
+    return result;
+}
+
+// 读取JSON
 function readJSON(path: File): AnyObject {
     _.isFolder(path) && app.project.setDefaultImportFolder(path);
 
