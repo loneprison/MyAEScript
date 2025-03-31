@@ -1,11 +1,11 @@
 import * as _ from 'soil-ts';
 
-type JSONRange = {
-    [key: string]: {
-        min: number,
-        max: number,
-    }
+type Range = {
+    min: number,
+    max: number,
 }
+type JSONRange = Partial<Record<typeListType, Range>>;
+type typeListType = typeof matchTypes[number];
 
 const textSizeHeight: number = 22;
 const buttonSizeHeight: number = 26;
@@ -15,7 +15,9 @@ const TextSizeArray_2: Array<number> = [0, 0, 32, textSizeHeight];
 const buttonSizeArray: Array<number> = [0, 0, 70, buttonSizeHeight];
 const dropdownSizeArray: Array<number> = [0, 0, 56, textSizeHeight];
 const dataBoxSizeArray: Array<number> = [0, 0, dataBoxWidth, textSizeHeight];
-const matchTypes: Array<string> = ["AC", "AF", "SC", "SF"]
+const matchTypes = ["AC", "AF", "SC", "SF"] as const;
+const defaultDebugText = "debug信息..."
+
 
 
 let UIExamples = {
@@ -99,10 +101,10 @@ let UIExamples = {
                     style: {
                         selection: 0
                     },
-                    param: ["dropName1", dropdownSizeArray, matchTypes]
+                    param: ["typeListType", dropdownSizeArray, matchTypes]
                 },
-                edittext1: [undefined, TextSizeArray_2, "01"],
-                edittext2: [undefined, TextSizeArray_2, "09"]
+                edittext1: ["groupRangeMin", TextSizeArray_2, "01"],
+                edittext2: ["groupRangeMax", TextSizeArray_2, "09"]
             },
             group4: {
                 style: {
@@ -198,7 +200,7 @@ let UIExamples = {
     },
 
     edittext1: {
-        param: ["debugText", [0, 0, 300, 200], "debug信息...", {
+        param: ["debugText", [0, 0, 300, 200], defaultDebugText, {
             multiline: true
         }],
         style: {
@@ -209,93 +211,139 @@ let UIExamples = {
 
 // 创建UI窗口
 let elements = _.tree.parse(UIExamples);
-const refreshUI = () => { return elements.layout.layout() }
 
 let readJSONButton = elements.getElementById<Button>("readJSONButton");
 let debugText = elements.getElementById<EditText>("debugText");
 let readFileNameText = elements.getElementById<StaticText>("readFileName");
 let dataRangeText = elements.getElementById<StaticText>("dataRange");
+let groupTypeList = elements.getElementById<DropDownList>("typeListType");
+let groupRangeMinText = elements.getElementById<EditText>("groupRangeMin");
+let groupRangeMaxText = elements.getElementById<EditText>("groupRangeMax");
 
-let JSONdata: AnyObject = {}
+class JSONListener {
+    private data: AnyObject = {};
+    private name: string = ""
+    private result: JSONRange = {};
+    private log: string = defaultDebugText;
 
-
-// 需要用监听器重写UI
-readJSONButton && (readJSONButton.onClick = (): void => {
-    const path = app.project.file;
-    if (!path) {
-        logDebugText_Add("请先保存项目再进行操作")
-        JSONdata = {}
-        return
+    private readonly refreshUI = () => {
+        if (elements?.layout) {
+            elements.layout.layout();
+        }
     }
-    JSONdata = readJSON(path)
-    refreshDataRangeText()
-})
 
-// 刷新并写入新的Debug信息
-function logDebugText_Refresh(text: string): void {
-    debugText && (debugText.text = text)
-    refreshUI()
-}
+    private set(obj: AnyObject) {
+        this.data = obj
+        this.refreshReadFileNameText()
+        this.refreshDataRangeText()
+    }
 
-// 刷新并增加Debug信息
-function logDebugText_Add(text: string): void {
-    debugText && (debugText.text = `${debugText.text}\n${text}`)
-    refreshUI()
-}
+    public getData() {
+        return this.data
+    }
 
-// 刷新第一排文件名信息
-function refreshReadFileNameText(name: string): void {
-    readFileNameText && (readFileNameText.text = name)
-    logDebugText_Add(`成功读取文件: ${name}`)
-    refreshUI()
-}
-
-// 刷新第二排JSON范围信息
-function refreshDataRangeText(): void {
-    const result: JSONRange = getMinMaxByCategory(JSONdata, matchTypes);
-    let range = _.mapObject(result, (value, key) => {
-        return `${key} : ${value.min} - ${value.max}`
-    })
-
-    dataRangeText && (dataRangeText.text = range.join(" | "))
-    logDebugText_Add(range.join("\n"))
-    refreshUI()
-}
-
-// 辅助函数: 获取JSON的具体范围
-function getMinMaxByCategory(JSONdata: AnyObject, matchTypes: string[]): JSONRange {
-    const result: JSONRange = {};
-    const regex = /^([A-Z]+)(\d+)$/;
-
-    _.each(_.keys(JSONdata), (key) => {
-        const match = regex.exec(key);
-        if (match) {
-            const type = match[1];
-            const num = parseInt(match[2], 10);
-
-            if (_.indexOf(matchTypes, type) !== -1) {
-                if (!result[type]) {
-                    result[type] = { min: num, max: num };
-                } else {
-                    result[type].min = Math.min(result[type].min, num);
-                    result[type].max = Math.max(result[type].max, num);
-                }
+    public getResult(type: typeListType): Range {
+        if (this.result[type]) {
+            return this.result[type]
+        } else {
+            return {
+                min: -1,
+                max: -1
             }
         }
-    });
+    }
 
-    return result;
+    public logRefresh(text: string): void {
+        this.log = text;
+        if (debugText) {
+            debugText.text = this.log;
+        }
+        this.refreshUI();
+    }
+
+    public logAdd(text: string): void {
+        this.log += `\n${text}`;
+        if (debugText) {
+            debugText.text = this.log;
+        }
+        this.refreshUI();
+    }
+
+    public readJSON(path: Folder): void {
+        app.project.setDefaultImportFolder(path);
+        let JSONFile = File.openDialog("Open a file", "Acceptable Files:*.json", false);
+        
+        if (!JSONFile) {
+            this.logAdd("文件读取取消");
+            return;
+        }
+
+        this.name = decodeURI(JSONFile.name);
+        if (JSONFile.open("r")) {
+            const readJSON = JSONFile.read();
+            JSONFile.close();
+            try {
+                this.set(_.parseJson(readJSON));
+            } catch (e) {
+                this.logAdd("JSON 解析失败");
+            }
+        } else {
+            this.logAdd("无法打开文件");
+        }
+    }
+
+    // 刷新第一排文件名信息
+    private refreshReadFileNameText(): void {
+        readFileNameText && (readFileNameText.text = this.name)
+        this.logAdd(`成功读取文件: ${this.name}`)
+    }
+
+    // 刷新第二排JSON范围信息
+    private refreshDataRangeText(): void {
+        this.getMinMaxByCategory(matchTypes);
+        let range:string[] = _.mapObject(this.result, (value, key) => {
+            if (value) {
+                return `${key} : ${value.min} - ${value.max}`;
+            }
+            return `${key} : 信息获取异常,请联系作者寻求帮助`;
+        });
+
+        dataRangeText && (dataRangeText.text = range.join(" | "))
+        this.logAdd(range.join("\n"))
+    }
+
+    private getMinMaxByCategory(matchTypes: string[]): void {
+        const regex = /^([A-Z]+)(\d+)$/;
+        this.result = {};
+
+        _.forOwn(this.data, (value, key) => {
+            const match = regex.exec(key);
+            if (match) {
+                const type = match[1] as typeListType;
+                const num = parseInt(match[2], 10);
+
+                if (_.indexOf(matchTypes, type) !== -1) {
+                    if (!this.result[type]) {
+                        this.result[type] = { min: num, max: num };
+                    } else {
+                        this.result[type].min = Math.min(this.result[type].min, num);
+                        this.result[type].max = Math.max(this.result[type].max, num);
+                    }
+                }
+            }
+        });
+    }
+
+
 }
 
-// 读取JSON
-function readJSON(path: File): AnyObject {
-    _.isFolder(path) && app.project.setDefaultImportFolder(path);
+const jsonListener = new JSONListener
 
-    const file = new File(path.path);
-    let JSONFile = file.openDlg("Open a file", "Acceptable Files:*.json", false);
-    refreshReadFileNameText(decodeURI(JSONFile.name))
-    JSONFile.open("r");
-    const readJSON = JSONFile.read();
-    JSONFile.close();
-    return _.parseJson(readJSON);
-}
+readJSONButton && (readJSONButton.onClick = (): void => {
+    const path = app.project.file;
+    if (!_.isFolder(path)) {
+        jsonListener.logAdd("请先保存项目再进行操作")
+        return
+    }
+    jsonListener.readJSON(path)
+})
