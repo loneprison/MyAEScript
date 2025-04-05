@@ -1,5 +1,5 @@
 import * as _ from 'soil-ts';
-import { duplicateLayers, setPropertyByData } from '../../utils';
+import { duplicateLayers, setPropertyByData } from '../../../utils';
 
 function setTest(str: string): PropertyDataStructure {
     return {

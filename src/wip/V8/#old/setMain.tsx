@@ -1,5 +1,5 @@
 import * as _ from 'soil-ts';
-import { setPropertyByData } from '../../utils';
+import { setPropertyByData } from '../../../utils';
 
 function getItemFromPath(pathArray: string[]): _ItemClasses | undefined {
     const project = app.project;
