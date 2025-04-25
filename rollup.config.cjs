@@ -164,8 +164,6 @@ const configs = recentFiles.map((file) => {
                         "// Soil作者:  Raymond Yan (raymondclr@foxmail.com / qq: 1107677019)",
                         "// Soil Github: https://github.com/RaymondClr/Soil",
                         "",
-                        "// 脚本作者: loneprison (qq: 769049918)",
-                        "// Github: https://github.com/loneprison/MyAEScript",
                         `// - ${new Date().toLocaleString()}`,
                     ].join("\n"),
                     wrap_func_args: false,
